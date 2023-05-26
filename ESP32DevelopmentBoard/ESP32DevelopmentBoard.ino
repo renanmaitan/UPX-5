@@ -78,15 +78,11 @@ void setup() {
 
 void loop() {
   double umidadeLeitura = analogRead(A2);
-  double umidade;
-  umidade = umidadeLeitura*(5.0/1023.0);
+  double tensao;
+  tensao = umidadeLeitura*(5.0/1023.0);
+  float umidade = 100-((tensao-0.99)/1.91*100);
   double luminosidade = analogRead(A1);
-  Serial.println(umidade);
-  float umidadeA = 100-((umidade-0.99)/1.91*100);
-  Serial.print("Umidade: ");
-  Serial.println(umidadeA);
-  Serial.print("Luminosidade: ");
-  Serial.println(luminosidade);
+
   client.loop();
   delay(1000);  // <- fixes some issues with WiFi stability
 
