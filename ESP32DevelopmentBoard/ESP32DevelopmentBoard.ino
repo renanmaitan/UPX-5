@@ -17,7 +17,7 @@ SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX
 char ssid[] = "Renan_2.4G"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
 char pass[] = "ram998451";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
 char servidorMQTT[] = "ec2-18-218-179-131.us-east-2.compute.amazonaws.com" //conexão MQTT
-float tempo = 3; //tempo em minutos para dar publish
+double tempo = 3; //tempo em minutos para dar publish
 
 WiFiEspClient net;
 MQTTClient client;
@@ -67,8 +67,6 @@ void setup() {
   WiFi.begin(ssid, pass);
   pinMode(A2, INPUT);
   pinMode(A1, INPUT);
-  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
-  // by Arduino. You need to set the IP address directly.
   client.begin(servidorMQTT, net);
   client.onMessage(messageReceived);
 
@@ -79,9 +77,9 @@ void loop() {
   double umidadeLeitura = analogRead(A2);
   double tensao;
   tensao = umidadeLeitura*(5.0/1023.0);
-  float umidade = 100-((tensao-0.99)/1.91*100);
-  double luminosidade = analogRead(A1);
-
+  double umidade = 100-((tensao-0.99)/1.91*100); //calculo da umidade em porcentagem
+  double luminosidade = analogRead(A1); 
+  luminosidade = (luminosidade/1023)*100 //calculo da luminosidade em porcentagem
   client.loop();
   delay(1000);  // <- fixes some issues with WiFi stability
 
@@ -89,7 +87,7 @@ void loop() {
     connect();
   }
   luminosidade++;
-  // publish a message roughly every second.
+
   if (millis() - lastMillis > 60000*tempo) { //delay para enviar dados
     lastMillis = millis();
     StaticJsonDocument<200> jsonDocument;

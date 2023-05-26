@@ -36,17 +36,18 @@ def connect_mqtt():
 
 def subscribe(client: mqtt_client):
     def on_message(client, userdata, msg):
-        # if not isBombaOn:
-        #     client.publish(topic, 1) 
+        
         y = json.loads(msg.payload.decode())
         umidade = float((y['umidade']))
         luminosidade = float((y['luminosidade']))
         print(time.time)
-        # tipoPlanta = y['tipoPlanta']
-        # luminosidadeIdeal = y['luminosidadeIdeal']
-        # umidadeIdeal = y['umidadeIdeal']
-        # isLedOn = y['isLedOn']
-        # isBombaOn = y['isBombaOn']
+        
+        #REQUISITA DA API:
+        # tipoPlanta #talvez nao precise
+        # luminosidadeIdeal
+        # umidadeIdeal
+        # isLedOn
+        # isBombaOn
         
         # if luminosidade < luminosidadeIdeal:
             # if not isLedOn:
@@ -57,6 +58,13 @@ def subscribe(client: mqtt_client):
             # if not isBombaOn:
             #   client.publish(topic, 1)
             #   bombaOn = True
+        
+        
+        #ENVIA PARA API:
+        #umidade
+        #luminosidade
+        #ledOn
+        #bombaOn
         
         print(umidade)
         print(luminosidade)
