@@ -79,7 +79,7 @@ void loop() {
   tensao = umidadeLeitura*(5.0/1023.0);
   double umidade = 100-((tensao-0.99)/1.91*100); //calculo da umidade em porcentagem
   double luminosidade = analogRead(A1); 
-  luminosidade = (luminosidade/1023)*100 //calculo da luminosidade em porcentagem
+  luminosidade = (luminosidade/1023.0)*100 //calculo da luminosidade em porcentagem
   client.loop();
   delay(1000);  // <- fixes some issues with WiFi stability
 
