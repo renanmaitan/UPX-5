@@ -40,7 +40,6 @@ def subscribe(client: mqtt_client):
         y = json.loads(msg.payload.decode())
         umidade = float((y['umidade']))
         luminosidade = float((y['luminosidade']))
-        print(time.time)
         
         #REQUISITA DA API:
         # tipoPlanta #talvez nao precise
@@ -65,6 +64,7 @@ def subscribe(client: mqtt_client):
         #luminosidade
         #ledOn
         #bombaOn
+        #time.time
         
         print(umidade)
         print(luminosidade)

@@ -16,7 +16,7 @@ SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX
 
 char ssid[] = "Renan_2.4G"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
 char pass[] = "ram998451";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
-char servidorMQTT[] = "ec2-18-218-179-131.us-east-2.compute.amazonaws.com" //conexão MQTT
+char servidorMQTT[] = "ec2-18-218-179-131.us-east-2.compute.amazonaws.com"; //conexão MQTT
 double tempo = 3; //tempo em minutos para dar publish
 
 WiFiEspClient net;
@@ -79,7 +79,7 @@ void loop() {
   tensao = umidadeLeitura*(5.0/1023.0);
   double umidade = 100-((tensao-0.99)/1.91*100); //calculo da umidade em porcentagem
   double luminosidade = analogRead(A1); 
-  luminosidade = (luminosidade/1023.0)*100 //calculo da luminosidade em porcentagem
+  luminosidade = (luminosidade/1023.0)*100; //calculo da luminosidade em porcentagem
   client.loop();
   delay(1000);  // <- fixes some issues with WiFi stability
 
