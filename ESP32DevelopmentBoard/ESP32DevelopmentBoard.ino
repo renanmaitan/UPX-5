@@ -17,12 +17,10 @@ SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX
 char ssid[] = "Renan_2.4G"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
 char pass[] = "ram998451";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
 char servidorMQTT[] = "ec2-18-218-179-131.us-east-2.compute.amazonaws.com" //conexão MQTT
+float tempo = 3; //tempo em minutos para dar publish
 
 WiFiEspClient net;
 MQTTClient client;
-
-float valor_max = 2.9;
-float valor_min = 0.99;
 
 unsigned long lastMillis = 0;
 void connect() {
@@ -92,7 +90,7 @@ void loop() {
   }
   luminosidade++;
   // publish a message roughly every second.
-  if (millis() - lastMillis > 10000) { //10 seconds to publish information
+  if (millis() - lastMillis > 60000*tempo) { //delay para enviar dados
     lastMillis = millis();
     StaticJsonDocument<200> jsonDocument;
     jsonDocument["umidade"] = umidade;
