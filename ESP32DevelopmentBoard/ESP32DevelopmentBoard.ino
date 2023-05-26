@@ -20,9 +20,10 @@ char pass[] = "ram998451";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
 WiFiEspClient net;
 MQTTClient client;
 
+float valor_max = 2.9;
+float valor_min = 0.99;
+
 unsigned long lastMillis = 0;
-float umidade = 0;
-float luminosidade = 1;
 void connect() {
   Serial.print("checking wifi...");
   while (WiFi.status() != WL_CONNECTED) {
@@ -61,40 +62,50 @@ void messageReceived(String &topic, String &payload) {
 
 void setup() {
   Serial.begin(9600);
-  Serial1.begin(9600); //INICIALIZA A SERIAL PARA O ESP8266
-  WiFi.init(&Serial1); //INICIALIZA A COMUNICAÇÃO SERIAL COM O ESP8266
-  WiFi.config(IPAddress(192,168,0,110)); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR
-  WiFi.begin(ssid, pass);
+  // Serial1.begin(9600); //INICIALIZA A SERIAL PARA O ESP8266
+  // WiFi.init(&Serial1); //INICIALIZA A COMUNICAÇÃO SERIAL COM O ESP8266
+  // WiFi.config(IPAddress(192,168,0,110)); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR
+  // WiFi.begin(ssid, pass);
+  pinMode(A2, INPUT);
+  pinMode(A1, INPUT);
+  // // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
+  // // by Arduino. You need to set the IP address directly.
+  // client.begin("ec2-18-218-179-131.us-east-2.compute.amazonaws.com", net);
+  // client.onMessage(messageReceived);
 
-  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
-  // by Arduino. You need to set the IP address directly.
-  client.begin("ec2-18-218-179-131.us-east-2.compute.amazonaws.com", net);
-  client.onMessage(messageReceived);
-
-  connect();
+  // connect();
 }
 
 void loop() {
+  double umidadeLeitura = analogRead(A2);
+  double umidade;
+  umidade = umidadeLeitura*(5.0/1023.0);
+  double luminosidade = analogRead(A1);
+  Serial.println(umidade);
+  float umidadeA = 100-((umidade-0.99)/1.91*100);
+  Serial.print("Umidade: ");
+  Serial.println(umidadeA);
+  Serial.print("Luminosidade: ");
+  Serial.println(luminosidade);
   client.loop();
-  delay(10);  // <- fixes some issues with WiFi stability
+  delay(1000);  // <- fixes some issues with WiFi stability
 
-  if (!client.connected()) {
-    connect();
-  }
-  umidade++;
-  luminosidade++;
-  // publish a message roughly every second.
-  if (millis() - lastMillis > 1000) {
-    lastMillis = millis();
-    StaticJsonDocument<200> jsonDocument;
-    jsonDocument["umidade"] = umidade;
-    jsonDocument["luminosidade"] = luminosidade;
+  // if (!client.connected()) {
+  //   connect();
+  // }
+  // luminosidade++;
+  // // publish a message roughly every second.
+  // if (millis() - lastMillis > 1000) {
+  //   lastMillis = millis();
+  //   StaticJsonDocument<200> jsonDocument;
+  //   jsonDocument["umidade"] = umidade;
+  //   jsonDocument["luminosidade"] = luminosidade;
 
-    // Conversão do objeto JSON para uma string
-    String jsonString;
-    serializeJson(jsonDocument, jsonString);
+  //   // Conversão do objeto JSON para uma string
+  //   String jsonString;
+  //   serializeJson(jsonDocument, jsonString);
 
-    // Publicação da mensagem JSON no tópico MQTT
-    client.publish("mqtt/leituras", jsonString);
-  }
+  //   // Publicação da mensagem JSON no tópico MQTT
+  //   client.publish("mqtt/leituras", jsonString);
+  // }
 }
