@@ -3,13 +3,9 @@ from paho.mqtt import client as mqtt_client
 import json
 import time
 import http.client
-from datetime import datetime
 
-client = http.client.HTTPConnection('ec2-18-218-179-131.us-east-2.compute.amazonaws.com', 1883)
-client.connect()
-client.publish('/planta', 'Ligar Bomba')
 
-broker = 'ec2-18-218-179-131.us-east-2.compute.amazonaws.com'
+broker = 'ec2-3-145-170-167.us-east-2.compute.amazonaws.com'
 port = 1883
 topic = "mqtt/request"
 topic_leituras = "mqtt/leituras"
@@ -66,8 +62,8 @@ def subscribe(client: mqtt_client):
         #bombaOn
         #time.time
         
-        print(umidade)
-        print(luminosidade)
+        print("Umidade: ",umidade)
+        print("Luminosidade: ",luminosidade)
         #print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
     
     client.subscribe(topic_leituras)

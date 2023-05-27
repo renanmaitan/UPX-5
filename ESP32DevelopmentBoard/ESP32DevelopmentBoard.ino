@@ -14,10 +14,10 @@
 
 SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX E O PINO 7 É O TX
 
-char ssid[] = "Renan_2.4G"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
-char pass[] = "ram998451";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
-char servidorMQTT[] = "ec2-18-218-179-131.us-east-2.compute.amazonaws.com"; //conexão MQTT
-double tempo = 3; //tempo em minutos para dar publish
+char ssid[] = "Antonioli"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
+char pass[] = "996022174";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
+char servidorMQTT[] = "ec2-3-145-170-167.us-east-2.compute.amazonaws.com"; //conexão MQTT
+double tempo = 0.05; //tempo em minutos para dar publish
 
 WiFiEspClient net;
 MQTTClient client;
@@ -63,7 +63,7 @@ void setup() {
   Serial.begin(9600);
   Serial1.begin(9600); //INICIALIZA A SERIAL PARA O ESP8266
   WiFi.init(&Serial1); //INICIALIZA A COMUNICAÇÃO SERIAL COM O ESP8266
-  WiFi.config(IPAddress(192,168,0,110)); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR
+  WiFi.config(IPAddress(192,168,1,110)); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR
   WiFi.begin(ssid, pass);
   pinMode(A2, INPUT);
   pinMode(A1, INPUT);
@@ -78,7 +78,7 @@ void loop() {
   double tensao;
   tensao = umidadeLeitura*(5.0/1023.0);
   double umidade = 100-((tensao-0.99)/1.91*100); //calculo da umidade em porcentagem
-  double luminosidade = analogRead(A1); 
+  double luminosidade = analogRead(A1);
   luminosidade = (luminosidade/1023.0)*100; //calculo da luminosidade em porcentagem
   client.loop();
   delay(1000);  // <- fixes some issues with WiFi stability
