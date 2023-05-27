@@ -3,9 +3,12 @@ from paho.mqtt import client as mqtt_client
 import json
 import time
 import http.client
+import requests
 
 
-broker = 'ec2-3-145-170-167.us-east-2.compute.amazonaws.com'
+#request = requests.get('https://localhost:7298/')
+
+broker = 'ec2-18-191-140-46.us-east-2.compute.amazonaws.com'
 port = 1883
 topic = "mqtt/request"
 topic_leituras = "mqtt/leituras"
@@ -31,12 +34,37 @@ def connect_mqtt():
     return client
 
 def subscribe(client: mqtt_client):
+    id = 1
+    planta = None
+    while id <= 250:
+         request = requests.get(f'https://localhost:7298/plant/{id}',verify=False)
+         status = request.status_code
+         if status is 200:
+             planta = request.content
+             break
+         id += 1
+         
+    if planta is not None:
+        planta = json.loads(planta)
+        umidadeIdeal = planta['humity']
+        luminosidadeIdeal = planta['luminosity']
+
+    planta_Json = {
+        "humity": 0,
+        "luminosity": 0,
+        "name": "Plantinhaa",
+        "hours": 0
+    }
+    requests.post('https://localhost:7298/plant',json=planta_Json,verify=False)
+    requests.delete(f'https://localhost:7298/plant/{id}',verify=False)
+
+    
     def on_message(client, userdata, msg):
         
         y = json.loads(msg.payload.decode())
         umidade = float((y['umidade']))
         luminosidade = float((y['luminosidade']))
-        
+
         #REQUISITA DA API:
         # tipoPlanta #talvez nao precise
         # luminosidadeIdeal
