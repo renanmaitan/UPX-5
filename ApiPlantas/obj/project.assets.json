@@ -2345,11 +2345,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\210652\\Downloads\\ApiPlantas\\ApiPlantas\\ApiPlantas.csproj",
+      "projectUniqueName": "C:\\Users\\210652\\Documents\\GitHub\\UPX-5\\ApiPlantas\\ApiPlantas.csproj",
       "projectName": "ApiPlantas",
-      "projectPath": "C:\\Users\\210652\\Downloads\\ApiPlantas\\ApiPlantas\\ApiPlantas.csproj",
+      "projectPath": "C:\\Users\\210652\\Documents\\GitHub\\UPX-5\\ApiPlantas\\ApiPlantas.csproj",
       "packagesPath": "C:\\Users\\210652\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\210652\\Downloads\\ApiPlantas\\ApiPlantas\\obj\\",
+      "outputPath": "C:\\Users\\210652\\Documents\\GitHub\\UPX-5\\ApiPlantas\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\210652\\AppData\\Roaming\\NuGet\\NuGet.Config"
