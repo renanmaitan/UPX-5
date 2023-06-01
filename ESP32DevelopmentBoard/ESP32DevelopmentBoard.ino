@@ -14,9 +14,9 @@
 
 SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX E O PINO 7 É O TX
 
-char ssid[] = "Antonioli"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
-char pass[] = "996022174";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
-char servidorMQTT[] = "ec2-3-145-170-167.us-east-2.compute.amazonaws.com"; //conexão MQTT
+char ssid[] = "Renan_2.4G"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
+char pass[] = "ram998451";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
+char servidorMQTT[] = "ec2-3-144-39-216.us-east-2.compute.amazonaws.com"; //conexão MQTT
 double tempo = 0.05; //tempo em minutos para dar publish
 
 WiFiEspClient net;

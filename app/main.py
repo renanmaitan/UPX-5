@@ -7,7 +7,7 @@ import time
 
 class App():
     def __init__(self):
-        self.broker = 'ec2-18-191-140-46.us-east-2.compute.amazonaws.com'
+        self.broker = 'ec2-3-144-39-216.us-east-2.compute.amazonaws.com'
         self.port = 1883
         self.topic = "mqtt/request"
         self.topic_leituras = "mqtt/leituras"
@@ -16,7 +16,7 @@ class App():
         self.device_id = 'device_1'
         self.isLedOn = False;
         self.isBombaOn = False;
-        self.id = 1
+        self.id = 2
         self.planta = None
         self.arduino = None
         self.umidadeIdeal = 0
@@ -46,40 +46,42 @@ class App():
 
     def publishApi(self):
         arduino_Json = {
-            "Humity": 0,
-            "Luminosity": 0,
-            "Time": 0,
-            "LightOn": False,
-            "PumpOn": False,
+            "humity": 0,
+            "luminosity": 0,
+            "time": "2023-06-01T19:39:12.992Z",
+            "lightOn": False,
+            "pumpOn": False,
         }
         requests.post('https://localhost:7298/arduino',json=arduino_Json,verify=False)
         temp = requests.get('https://localhost:7298/arduino/last',verify=False)
-        temp = json.loads(temp)
+        temp = json.loads(temp.text)
         self.id = temp['id']
 
     def updateArduino(self):
         arduino_Json = {
-            "Humity": self.umidadeAtual,
-            "Luminosity": self.luminosidadeAtual,
-            "Time": (time.time() - self.start)/60,
-            "LightOn": self.isLedOn,
-            "PumpOn": self.isBombaOn,
+            "humity": self.umidadeAtual,
+            "luminosity": self.luminosidadeAtual,
+            "time": (time.time() - self.start)/60,
+            "lightOn": self.isLedOn,
+            "pumpOn": self.isBombaOn,
         }
         requests.put('https://localhost:7298/arduinodata/{self.id}',json=arduino_Json,verify=False)
 
     def getDataAPI(self):
-        self.planta = requests.get(f'https://localhost:7298/plant/{id}',verify=False)
+        self.planta = requests.get(f'https://localhost:7298/plant/{self.id}',verify=False)
         if self.planta is not None:
-            self.planta = json.loads(self.planta)
-            self.umidadeIdeal = self.planta['humity']
-            self.luminosidadeIdeal = self.planta['luminosity']
-            self.horasDeLuz = self.planta['hours']
+            if self.planta != 400:
+                self.planta = json.loads(self.planta.text)
+                self.umidadeIdeal = self.planta['humity']
+                self.luminosidadeIdeal = self.planta['luminosity']
+                self.horasDeLuz = self.planta['hours']
 
         self.arduino = requests.get(f'https://localhost:7298/arduino/last',verify=False)
         if self.arduino is not None:
-            self.arduino = json.loads(self.arduino)
-            self.isLedOn = self.arduino['LightOn']
-            self.isBombaOn = self.arduino['PumpOn']
+            arduino_text = self.arduino.text
+            self.arduino = json.loads(self.arduino.text)
+            self.isLedOn = self.arduino['lightOn']
+            self.isBombaOn = self.arduino['pumpOn']
             # planta_Json = {
             #     "humity": 0,
             #     "luminosity": 0,
