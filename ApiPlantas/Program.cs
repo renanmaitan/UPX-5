@@ -129,6 +129,53 @@ static void PlantController(WebApplication app)
         .Produces(StatusCodes.Status404NotFound)
         .WithName("DeletePlant")
         .WithTags("Plant");
+
+    app.MapGet("/plant/actual", async (
+        MinimalContextDb context) =>
+    {
+        var plant = await context.Plants.FirstOrDefaultAsync(p => p.IsUsed);
+        if (plant == null)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(plant);
+    })
+    .WithName("GetActualPlant")
+    .WithTags("Plant");
+
+    app.MapPut("/plant/{id}/actual", async (
+        int id, MinimalContextDb context) =>
+    {
+        var plant = await context.Plants.FindAsync(id);
+        if (plant == null)
+        {
+            return Results.NotFound();
+        }
+
+        var actualPlant = await context.Plants.FirstOrDefaultAsync(p => p.IsUsed);
+        if (actualPlant != null)
+        {
+            actualPlant.IsUsed = false;
+            context.Plants.Update(actualPlant);
+        }
+
+        plant.IsUsed = true;
+        context.Plants.Update(plant);
+
+        var result = await context.SaveChangesAsync();
+
+        return result > 0
+            ? Results.NoContent()
+            : Results.BadRequest("There was a problem saving the record");
+    })
+    .Produces(StatusCodes.Status204NoContent)
+    .Produces(StatusCodes.Status400BadRequest)
+    .Produces(StatusCodes.Status404NotFound)
+    .WithName("PutActualPlant")
+    .WithTags("Plant");
+
+    
 }
 
 static void ArduinoDataController(WebApplication app)

@@ -37,6 +37,11 @@ namespace ApiPlantas.Data
                 .HasColumnType("float");
 
             modelBuilder.Entity<Plant>()
+                .Property(p => p.IsUsed)
+                .IsRequired()
+                .HasColumnType("bit");
+
+            modelBuilder.Entity<Plant>()
                 .ToTable("Plants");
 
             modelBuilder.Entity<ArduinoData>()
