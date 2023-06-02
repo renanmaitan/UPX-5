@@ -16,9 +16,9 @@ SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX
 
 char ssid[] = "Renan_2.4G"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
 char pass[] = "ram998451";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
-char servidorMQTT[] = "ec2-3-144-39-216.us-east-2.compute.amazonaws.com"; //conexão MQTT
+char servidorMQTT[] = "ec2-18-191-215-255.us-east-2.compute.amazonaws.com"; //conexão MQTT
 double tempo = 0.05; //tempo em minutos para dar publish
-
+bool led=true, bomba=false;
 WiFiEspClient net;
 MQTTClient client;
 
@@ -42,16 +42,19 @@ void connect() {
   // client.unsubscribe("/hello");
 }
 
-void messageReceived(String &topic, String &payload) {
-  Serial.println("incoming: " + topic + " - " + payload);
-  
+void messageReceived(String &topic, String &id) {
   // Verifica se o tópico recebido é o "mqtt/request"
   if (topic == "mqtt/request") {
     // Faça o processamento necessário para a mensagem recebida
     // Exemplo: Verificar o conteúdo da mensagem e executar ações correspondentes
-    
-    // Exiba a mensagem no Serial do Arduino
-    Serial.println("Received message from mqtt/request: " + payload);
+    if (id == "0.1")
+        led = false;
+    else if (id == "1.1")
+        led = true;
+    else if (id == "0.2")
+        bomba = false;
+    else if (id == "1.2")
+        bomba = true;
   }
   // Note: Do not use the client in the callback to publish, subscribe or
   // unsubscribe as it may cause deadlocks when other things arrive while
@@ -63,10 +66,12 @@ void setup() {
   Serial.begin(9600);
   Serial1.begin(9600); //INICIALIZA A SERIAL PARA O ESP8266
   WiFi.init(&Serial1); //INICIALIZA A COMUNICAÇÃO SERIAL COM O ESP8266
-  WiFi.config(IPAddress(192,168,1,110)); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR
+  WiFi.config(IPAddress(192,168,0,110)); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR
   WiFi.begin(ssid, pass);
   pinMode(A2, INPUT);
   pinMode(A1, INPUT);
+  pinMode(4, OUTPUT); //LED
+  pinMode(2, OUTPUT); // BOMBA
   client.begin(servidorMQTT, net);
   client.onMessage(messageReceived);
 
@@ -87,6 +92,23 @@ void loop() {
     connect();
   }
   luminosidade++;
+
+  if (led and (digitalRead(4) == LOW)) {
+    Serial.println("Ligar Led");
+    digitalWrite(4, HIGH);
+  }
+  else if(!led and digitalRead(4) == HIGH){
+    Serial.println("Desligar Led");
+    digitalWrite(4, LOW);
+  }
+  if (bomba and (digitalRead(2) == LOW)) {
+    Serial.println("Ligar Bomba");
+    digitalWrite(2, HIGH);
+  }
+  else if(!led and digitalRead(2) == HIGH){
+    Serial.println("Desligar Bomba");
+    digitalWrite(2, LOW);
+  }
 
   if (millis() - lastMillis > 60000*tempo) { //delay para enviar dados
     lastMillis = millis();

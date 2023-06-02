@@ -3,11 +3,14 @@ from paho.mqtt import client as mqtt_client
 import json
 import requests
 import time
+import urllib3
+import datetime
+
 #request = requests.get('https://localhost:7298/')
 
 class App():
     def __init__(self):
-        self.broker = 'ec2-3-144-39-216.us-east-2.compute.amazonaws.com'
+        self.broker = 'ec2-18-191-215-255.us-east-2.compute.amazonaws.com'
         self.port = 1883
         self.topic = "mqtt/request"
         self.topic_leituras = "mqtt/leituras"
@@ -28,8 +31,10 @@ class App():
         self.start = time.time()
         self.tempoDeExecucao = 0
         self.tempoOffLuz = 0
+        self.idArduino = 0
         self.publishApi()
         self.getDataAPI()
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     def connect_mqtt(self):
         def on_connect(client, userdata, flags, rc):
@@ -45,32 +50,35 @@ class App():
         return client
 
     def publishApi(self):
+        current_datetime = datetime.datetime.now()
+        datetime_str = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        
         arduino_Json = {
             "humity": 0,
             "luminosity": 0,
-            "time": "2023-06-01T19:39:12.992Z",
+            "time": datetime_str,
             "lightOn": False,
             "pumpOn": False,
         }
         requests.post('https://localhost:7298/arduino',json=arduino_Json,verify=False)
         temp = requests.get('https://localhost:7298/arduino/last',verify=False)
         temp = json.loads(temp.text)
-        self.id = temp['id']
+        self.idArduino = temp['id']
 
     def updateArduino(self):
         arduino_Json = {
             "humity": self.umidadeAtual,
             "luminosity": self.luminosidadeAtual,
-            "time": (time.time() - self.start)/60,
             "lightOn": self.isLedOn,
             "pumpOn": self.isBombaOn,
         }
-        requests.put('https://localhost:7298/arduinodata/{self.id}',json=arduino_Json,verify=False)
+        requests.put(f'https://localhost:7298/arduinodata/{self.idArduino}',json=arduino_Json,verify=False)
 
     def getDataAPI(self):
         self.planta = requests.get(f'https://localhost:7298/plant/{self.id}',verify=False)
         if self.planta is not None:
-            if self.planta != 400:
+            if self.planta.status_code != 404:
+                planta_text = self.planta.text
                 self.planta = json.loads(self.planta.text)
                 self.umidadeIdeal = self.planta['humity']
                 self.luminosidadeIdeal = self.planta['luminosity']
@@ -118,19 +126,20 @@ class App():
                     if self.isLedOn:
                         client.publish(self.topic, 0.1)
                         self.isLedOn = False
-            if self.umidade < self.umidadeIdeal:
+            if self.umidadeAtual < self.umidadeIdeal:
                 if not self.isBombaOn:
                     client.publish(self.topic, 1.2)
-                    self.bombaOn = True
+                    self.isBombaOn = True
             else:
                 if self.isBombaOn:
                     client.publish(self.topic, 0.2)
-                    self.bombaOn = False
+                    self.isBombaOn = False
 
             self.updateArduino()
 
-            print("Umidade: ",self.umidade)
-            print("Luminosidade: ",self.luminosidade)
+            print("Umidade: ",self.umidadeAtual)
+            print("Luminosidade: ",self.luminosidadeAtual)
+            print("Luminosidade Ideal: ",self.luminosidadeIdeal)
             #print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
         
         client.subscribe(self.topic_leituras)
