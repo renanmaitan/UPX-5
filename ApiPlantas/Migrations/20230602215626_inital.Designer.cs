@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiPlantas.Migrations
 {
     [DbContext(typeof(MinimalContextDb))]
-    [Migration("20230526023009_initial")]
-    partial class initial
+    [Migration("20230602215626_inital")]
+    partial class inital
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -65,6 +65,9 @@ namespace ApiPlantas.Migrations
 
                     b.Property<double>("Humity")
                         .HasColumnType("float");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
 
                     b.Property<double>("Luminosity")
                         .HasColumnType("float");

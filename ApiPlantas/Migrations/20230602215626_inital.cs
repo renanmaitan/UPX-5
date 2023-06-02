@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ApiPlantas.Migrations
 {
-    public partial class initial : Migration
+    public partial class inital : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -35,7 +35,8 @@ namespace ApiPlantas.Migrations
                     Name = table.Column<string>(type: "varchar(200)", nullable: false),
                     Humity = table.Column<double>(type: "float", nullable: false),
                     Luminosity = table.Column<double>(type: "float", nullable: false),
-                    Hours = table.Column<double>(type: "float", nullable: false)
+                    Hours = table.Column<double>(type: "float", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -33,7 +33,6 @@ class App():
         self.tempoOffLuz = 0
         self.idArduino = 0
         self.publishApi()
-        self.getDataAPI()
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     def connect_mqtt(self):
@@ -66,7 +65,6 @@ class App():
         self.idArduino = temp['id']
 
     def getDataAPI(self):
-        self.planta = requests.get(f'https://localhost:7298/plant/{self.id}',verify=False)
         if self.planta is not None:
             if self.planta.status_code != 404:
                 planta_text = self.planta.text
@@ -91,44 +89,52 @@ class App():
             # requests.delete(f'https://localhost:7298/plant/{id}',verify=False)
 
     def getPlanta(self):
-        
+        self.planta = requests.get('https://localhost:7298/plant/actual',verify=False)
+        temp = json.loads(self.planta.text)
+        self.idArduino = temp['id']
+
+    def decisaoLed(self, client):
+        if self.tempoDeExecucao >= 86400:
+            self.start = time.time()
+            self.tempoDeLuzOnPorDia = 0
+        if self.luminosidadeAtual >= self.luminosidadeIdeal:
+
+            self.tempoDeLuzOnPorDia = time.time() - self.start - self.tempoOffLuz
+            if self.isLedOn:
+                client.publish(self.topic, 0.1)
+                self.isLedOn = False
+        else:
+            self.tempoOffLuz = time.time() - self.start - self.tempoDeLuzOnPorDia
+            if self.tempoDeLuzOnPorDia < (self.horasDeLuz)*3600:
+                if not self.isLedOn:
+                    client.publish(self.topic, 1.1)
+                    self.isLedOn = True
+            else:
+                if self.isLedOn:
+                    client.publish(self.topic, 0.1)
+                    self.isLedOn = False
+
+    def decisaoBomba(self, client):
+        if self.umidadeAtual < self.umidadeIdeal:
+            if not self.isBombaOn:
+                client.publish(self.topic, 1.2)
+                self.isBombaOn = True
+        else:
+            if self.isBombaOn:
+                client.publish(self.topic, 0.2)
+                self.isBombaOn = False
 
     def subscribe(self,client: mqtt_client):
         def on_message(client, userdata, msg):
-            
+            self.getPlanta()
+            self.getDataAPI()
             y = json.loads(msg.payload.decode())
             self.umidadeAtual = float((y['umidade']))
             self.luminosidadeAtual = float((y['luminosidade']))
 
             self.tempoDeExecucao = time.time() - self.start
-            if self.tempoDeExecucao >= 86400:
-                self.start = time.time()
-                self.tempoDeLuzOnPorDia = 0
-            if self.luminosidadeAtual >= self.luminosidadeIdeal:
-
-                self.tempoDeLuzOnPorDia = time.time() - self.start - self.tempoOffLuz
-                if self.isLedOn:
-                    client.publish(self.topic, 0.1)
-                    self.isLedOn = False
-            else:
-                self.tempoOffLuz = time.time() - self.start - self.tempoDeLuzOnPorDia
-                if self.tempoDeLuzOnPorDia < self.horasDeLuz:
-                    if not self.isLedOn:
-                        client.publish(self.topic, 1.1)
-                        self.isLedOn = True
-                else:
-                    if self.isLedOn:
-                        client.publish(self.topic, 0.1)
-                        self.isLedOn = False
-            if self.umidadeAtual < self.umidadeIdeal:
-                if not self.isBombaOn:
-                    client.publish(self.topic, 1.2)
-                    self.isBombaOn = True
-            else:
-                if self.isBombaOn:
-                    client.publish(self.topic, 0.2)
-                    self.isBombaOn = False
-
+            self.decisaoLed(client)
+            self.decisaoBomba(client)
             self.publishApi()
 
             print("Umidade: ",self.umidadeAtual)
@@ -138,18 +144,6 @@ class App():
         
         client.subscribe(self.topic_leituras)
         client.on_message = on_message
-        
-        
-        
-    def publish(self, client, id):
-        if id == 0.1:
-            result = client.publish(self.topic,"Desligar Led")
-        elif id == 1.1:
-            result = client.publish(self.topic,"Ligar Led")
-        elif id == 0.2:
-            result = client.publish(self.topic,"Desligar Bomba")
-        elif id == 1.2:
-            result = client.publish(self.topic,"Ligar Bomba")
         
     def main(self):
         client = self.connect_mqtt()

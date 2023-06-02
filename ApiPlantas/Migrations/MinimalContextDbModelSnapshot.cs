@@ -64,6 +64,9 @@ namespace ApiPlantas.Migrations
                     b.Property<double>("Humity")
                         .HasColumnType("float");
 
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
                     b.Property<double>("Luminosity")
                         .HasColumnType("float");
 
