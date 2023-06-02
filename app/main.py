@@ -10,15 +10,15 @@ import datetime
 
 class App():
     def __init__(self):
-        self.broker = 'ec2-18-191-215-255.us-east-2.compute.amazonaws.com'
+        self.broker = 'ec2-18-118-30-223.us-east-2.compute.amazonaws.com'
         self.port = 1883
         self.topic = "mqtt/request"
         self.topic_leituras = "mqtt/leituras"
         # generate client ID with pub prefix randomly
         self.client_id = f'python-mqtt-{random.randint(0, 1000)}'
         self.device_id = 'device_1'
-        self.isLedOn = False;
-        self.isBombaOn = False;
+        self.isLedOn = False
+        self.isBombaOn = False
         self.id = 2
         self.planta = None
         self.arduino = None
@@ -52,27 +52,18 @@ class App():
     def publishApi(self):
         current_datetime = datetime.datetime.now()
         datetime_str = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        
         arduino_Json = {
-            "humity": 0,
-            "luminosity": 0,
-            "time": datetime_str,
-            "lightOn": False,
-            "pumpOn": False,
+            "humity": self.umidadeAtual,
+            "luminosity": self.luminosidadeAtual,
+            "time" : datetime_str,
+            "lightOn": self.isLedOn,
+            "pumpOn": self.isBombaOn,
         }
+        requests.post(f'https://localhost:7298/arduino',json=arduino_Json,verify=False)
         requests.post('https://localhost:7298/arduino',json=arduino_Json,verify=False)
         temp = requests.get('https://localhost:7298/arduino/last',verify=False)
         temp = json.loads(temp.text)
         self.idArduino = temp['id']
-
-    def updateArduino(self):
-        arduino_Json = {
-            "humity": self.umidadeAtual,
-            "luminosity": self.luminosidadeAtual,
-            "lightOn": self.isLedOn,
-            "pumpOn": self.isBombaOn,
-        }
-        requests.put(f'https://localhost:7298/arduinodata/{self.idArduino}',json=arduino_Json,verify=False)
 
     def getDataAPI(self):
         self.planta = requests.get(f'https://localhost:7298/plant/{self.id}',verify=False)
@@ -99,9 +90,12 @@ class App():
             # requests.post('https://localhost:7298/plant',json=planta_Json,verify=False)
             # requests.delete(f'https://localhost:7298/plant/{id}',verify=False)
 
+    def getPlanta(self):
+        
+
     def subscribe(self,client: mqtt_client):
         def on_message(client, userdata, msg):
-
+            
             y = json.loads(msg.payload.decode())
             self.umidadeAtual = float((y['umidade']))
             self.luminosidadeAtual = float((y['luminosidade']))
@@ -135,7 +129,7 @@ class App():
                     client.publish(self.topic, 0.2)
                     self.isBombaOn = False
 
-            self.updateArduino()
+            self.publishApi()
 
             print("Umidade: ",self.umidadeAtual)
             print("Luminosidade: ",self.luminosidadeAtual)
