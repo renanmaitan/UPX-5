@@ -10,7 +10,7 @@ import datetime
 
 class App():
     def __init__(self):
-        self.broker = 'ec2-18-118-30-223.us-east-2.compute.amazonaws.com'
+        self.broker = 'ec2-18-117-12-176.us-east-2.compute.amazonaws.com'
         self.port = 1883
         self.topic = "mqtt/request"
         self.topic_leituras = "mqtt/leituras"

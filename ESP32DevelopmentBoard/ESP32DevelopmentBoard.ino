@@ -14,9 +14,9 @@
 
 SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX E O PINO 7 É O TX
 
-char ssid[] = "Renan_2.4G"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
-char pass[] = "ram998451";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
-char servidorMQTT[] = "ec2-18-118-30-223.us-east-2.compute.amazonaws.com"; //conexão MQTT
+char ssid[] = "Galaxy S21 5G305a"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
+char pass[] = "uncy8528";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
+char servidorMQTT[] = "ec2-18-117-12-176.us-east-2.compute.amazonaws.com"; //conexão MQTT
 double tempo = 0.05; //tempo em minutos para dar publish
 bool led=true, bomba=false;
 WiFiEspClient net;
