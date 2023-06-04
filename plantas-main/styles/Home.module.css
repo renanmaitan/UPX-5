@@ -1,0 +1,121 @@
+.container {
+  background: #04D361;
+  height: 100vh;
+
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+
+
+
+  gap: 70px;
+}
+
+.content .text {
+  display: flex;
+  flex-direction: column;
+  gap: 70px;
+
+  color: #FCF1F1;
+}
+
+.content .text h1 {
+  font-size: 4.5rem;
+  font-weight: 700;
+
+  font-family: 'Poppins', sans-serif;
+
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+
+
+.content .text h3 {
+  font-size: 2rem;
+  font-weight: 400;
+
+  font-family: 'Poppins', sans-serif;
+}
+
+.content .button {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.content .button button {
+
+  padding: 25px 22px;
+
+
+  border: none;
+  border-radius: 8px;
+
+  background: #218DC9;
+  color: #FCF1F1;
+
+  font-size: 1.2rem;
+  font-weight: 700;
+
+  font-family: 'Poppins', sans-serif;
+
+}
+
+.content button a{
+  text-decoration: none;
+  color: #FCF1F1;
+}
+
+.content .button button:hover {
+  background: #1A7DA8;
+}
+
+.image {
+  position: relative;
+
+  width: 40%;
+
+  display: flex;
+}
+
+.planta1 {
+  position: absolute;
+  right: 20px;
+  bottom: -150px;
+  z-index: 1;
+}
+
+.planta1 img {
+  max-width: 310px;
+}
+
+.planta2 {
+  position: absolute;
+  right: 140px;
+  bottom: -170px;
+  z-index: 2;
+}
+
+.planta2 img {
+  max-width: 360px;
+}
+
+.planta3 {
+  position: absolute;
+  right: 340px;
+  top: -280px;
+  z-index: 0;
+}
+
+.planta3 img {
+  max-width: 210px;
+}
