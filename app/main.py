@@ -32,6 +32,7 @@ class App():
         self.tempoDeExecucao = 0
         self.tempoOffLuz = 0
         self.idArduino = 0
+        self.comando = [0, 0]
         self.publishApi()
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -93,7 +94,7 @@ class App():
         temp = json.loads(self.planta.text)
         self.idArduino = temp['id']
 
-    def decisaoLed(self, client):
+    def decisaoLed(self, client, msg):
         if self.tempoDeExecucao >= 86400:
             self.start = time.time()
             self.tempoDeLuzOnPorDia = 0
@@ -101,28 +102,32 @@ class App():
 
             self.tempoDeLuzOnPorDia = time.time() - self.start - self.tempoOffLuz
             if self.isLedOn:
-                client.publish(self.topic, 0.1)
+                msg[0] = 0
                 self.isLedOn = False
         else:
             self.tempoOffLuz = time.time() - self.start - self.tempoDeLuzOnPorDia
             if self.tempoDeLuzOnPorDia < (self.horasDeLuz)*3600:
                 if not self.isLedOn:
-                    client.publish(self.topic, 1.1)
+                    msg[0] = 1
                     self.isLedOn = True
             else:
                 if self.isLedOn:
-                    client.publish(self.topic, 0.1)
+                    msg[0] = 0
                     self.isLedOn = False
+        return msg
 
-    def decisaoBomba(self, client):
+    def decisaoBomba(self, client, msg):
+        print(self.umidadeIdeal)
+        print(self.isBombaOn)
         if self.umidadeAtual < self.umidadeIdeal:
             if not self.isBombaOn:
-                client.publish(self.topic, 1.2)
+                msg[1] = 1
                 self.isBombaOn = True
         else:
             if self.isBombaOn:
-                client.publish(self.topic, 0.2)
+                msg[1] = 0
                 self.isBombaOn = False
+        return msg
 
     def subscribe(self,client: mqtt_client):
         def on_message(client, userdata, msg):
@@ -133,8 +138,13 @@ class App():
             self.luminosidadeAtual = float((y['luminosidade']))
 
             self.tempoDeExecucao = time.time() - self.start
-            self.decisaoLed(client)
-            self.decisaoBomba(client)
+            self.comando = self.decisaoLed(client, self.comando)
+            self.comando = self.decisaoBomba(client, self.comando)
+            print("self.comando: ",self.comando)
+            print("Umidade ideal",self.umidadeIdeal)
+            self.comando_str = ', '.join(str(x) for x in self.comando)
+            client.publish(self.topic, self.comando_str)
+            print()
             self.publishApi()
 
             print("Umidade: ",self.umidadeAtual)

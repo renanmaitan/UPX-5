@@ -14,11 +14,12 @@
 
 SoftwareSerial Serial1(6, 7); //PINOS QUE EMULAM A SERIAL, ONDE O PINO 6 É O RX E O PINO 7 É O TX
 
-char ssid[] = "Galaxy S21 5G305a"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
-char pass[] = "uncy8528";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
+char ssid[] = "Antonioli"; //VARIÁVEL QUE ARMAZENA O NOME DA REDE SEM FIO
+char pass[] = "996022174";//VARIÁVEL QUE ARMAZENA A SENHA DA REDE SEM FIO
 char servidorMQTT[] = "ec2-18-117-12-176.us-east-2.compute.amazonaws.com"; //conexão MQTT
-double tempo = 0.05; //tempo em minutos para dar publish
-bool led=true, bomba=false;
+double tempo = 0.16; //tempo em minutos para dar publish
+bool led=false;
+bool bomba=false;
 WiFiEspClient net;
 MQTTClient client;
 
@@ -44,18 +45,26 @@ void connect() {
 
 void messageReceived(String &topic, String &id) {
   // Verifica se o tópico recebido é o "mqtt/request"
-  if (topic == "mqtt/request") {
+  
     // Faça o processamento necessário para a mensagem recebida
     // Exemplo: Verificar o conteúdo da mensagem e executar ações correspondentes
-    if (id == "0.1")
-        led = false;
-    else if (id == "1.1")
-        led = true;
-    else if (id == "0.2")
-        bomba = false;
-    else if (id == "1.2")
-        bomba = true;
-  }
+  
+
+  // Faça o que precisa ser feito com os valores da bomba e do led
+  // ...
+
+  // Exemplo de impressão dos valores lidos
+  Serial.println(id);
+  if (id == "0, 0" || id == "0, 1")
+      led = false;
+  else
+      led = true;
+
+  if (id == "0, 0" || id == "1, 0")
+      bomba = false;
+  else
+      bomba = true;
+  
   // Note: Do not use the client in the callback to publish, subscribe or
   // unsubscribe as it may cause deadlocks when other things arrive while
   // sending and receiving acknowledgments. Instead, change a global variable,
@@ -66,7 +75,7 @@ void setup() {
   Serial.begin(9600);
   Serial1.begin(9600); //INICIALIZA A SERIAL PARA O ESP8266
   WiFi.init(&Serial1); //INICIALIZA A COMUNICAÇÃO SERIAL COM O ESP8266
-  WiFi.config(IPAddress(192,168,0,110)); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR
+  WiFi.config(IPAddress(192,168,1,110)); //COLOQUE UMA FAIXA DE IP DISPONÍVEL DO SEU ROTEADOR
   WiFi.begin(ssid, pass);
   pinMode(A2, INPUT);
   pinMode(A1, INPUT);
@@ -91,21 +100,20 @@ void loop() {
   if (!client.connected()) {
     connect();
   }
-  luminosidade++;
 
-  if (led and (digitalRead(4) == LOW)) {
+  if (led && (digitalRead(4) == LOW)) {
     Serial.println("Ligar Led");
     digitalWrite(4, HIGH);
   }
-  else if(!led and digitalRead(4) == HIGH){
+  else if(!led && (digitalRead(4) == HIGH)){
     Serial.println("Desligar Led");
     digitalWrite(4, LOW);
   }
-  if (bomba and (digitalRead(2) == LOW)) {
+  if (bomba && (digitalRead(2) == LOW)) {
     Serial.println("Ligar Bomba");
     digitalWrite(2, HIGH);
   }
-  else if(!led and digitalRead(2) == HIGH){
+  else if(!bomba && (digitalRead(2) == HIGH)){
     Serial.println("Desligar Bomba");
     digitalWrite(2, LOW);
   }
