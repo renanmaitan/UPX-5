@@ -9,9 +9,17 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ApiPlantas
 build_property.RootNamespace = ApiPlantas
+<<<<<<< HEAD
 build_property.ProjectDir = C:\Users\Helmont\OneDrive\Área de Trabalho\Faculdade\5 semestre\UPX-5\ApiPlantas\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
 build_property.MSBuildProjectDirectory = C:\Users\Helmont\OneDrive\Área de Trabalho\Faculdade\5 semestre\UPX-5\ApiPlantas
+=======
+build_property.ProjectDir = C:\Users\210652\Documents\GitHub\UPX-5\ApiPlantas\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\210652\Documents\GitHub\UPX-5\ApiPlantas
+>>>>>>> 1f73794472cf9a422e527072716d47d7125470d9
 build_property._RazorSourceGeneratorDebug = 
