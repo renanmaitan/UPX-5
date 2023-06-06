@@ -19,7 +19,8 @@ namespace ApiPlantas.Migrations
                     Luminosity = table.Column<double>(type: "float", nullable: false),
                     Time = table.Column<DateTime>(type: "datetime", nullable: false),
                     PumpOn = table.Column<bool>(type: "bit", nullable: false),
-                    LightOn = table.Column<bool>(type: "bit", nullable: false)
+                    LightOn = table.Column<bool>(type: "bit", nullable: false),
+                    PlantId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,7 +36,9 @@ namespace ApiPlantas.Migrations
                     Name = table.Column<string>(type: "varchar(200)", nullable: false),
                     Humity = table.Column<double>(type: "float", nullable: false),
                     Luminosity = table.Column<double>(type: "float", nullable: false),
-                    Hours = table.Column<double>(type: "float", nullable: false)
+                    Hours = table.Column<double>(type: "float", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    ImageBase64 = table.Column<string>(type: "varchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

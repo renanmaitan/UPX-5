@@ -44,7 +44,6 @@ class App():
                 print("Failed to connect, return code %d\n", rc)
         
         client = mqtt_client.Client(self.client_id)
-        # client.username_pw_set(username, password)
         client.on_connect = on_connect
         client.connect(self.broker, self.port)
         return client
@@ -90,8 +89,7 @@ class App():
             # requests.post('https://localhost:7298/plant',json=planta_Json,verify=False)
             # requests.delete(f'https://localhost:7298/plant/{id}',verify=False)
 
-    def getPlanta(self):
-        
+
 
     def subscribe(self,client: mqtt_client):
         def on_message(client, userdata, msg):
