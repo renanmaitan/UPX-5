@@ -10,7 +10,7 @@ import datetime
 
 class App():
     def __init__(self):
-        self.broker = 'ec2-18-117-12-176.us-east-2.compute.amazonaws.com'
+        self.broker = 'ec2-3-128-199-110.us-east-2.compute.amazonaws.com'
         self.port = 1883
         self.topic = "mqtt/request"
         self.topic_leituras = "mqtt/leituras"
@@ -103,17 +103,14 @@ class App():
             self.tempoDeLuzOnPorDia = time.time() - self.start - self.tempoOffLuz
             if self.isLedOn:
                 msg[0] = 0
-                self.isLedOn = False
         else:
             self.tempoOffLuz = time.time() - self.start - self.tempoDeLuzOnPorDia
             if self.tempoDeLuzOnPorDia < (self.horasDeLuz)*3600:
                 if not self.isLedOn:
                     msg[0] = 1
-                    self.isLedOn = True
             else:
                 if self.isLedOn:
                     msg[0] = 0
-                    self.isLedOn = False
         return msg
 
     def decisaoBomba(self, client, msg):
@@ -122,11 +119,9 @@ class App():
         if self.umidadeAtual < self.umidadeIdeal:
             if not self.isBombaOn:
                 msg[1] = 1
-                self.isBombaOn = True
         else:
             if self.isBombaOn:
                 msg[1] = 0
-                self.isBombaOn = False
         return msg
 
     def subscribe(self,client: mqtt_client):
@@ -143,8 +138,27 @@ class App():
             print("self.comando: ",self.comando)
             print("Umidade ideal",self.umidadeIdeal)
             self.comando_str = ', '.join(str(x) for x in self.comando)
-            client.publish(self.topic, self.comando_str)
-            print()
+            print("Bomba:",self.isBombaOn)
+            print("Led:", self.isLedOn)
+            if (self.comando == [0, 0] and self.isBombaOn == False and self.isLedOn == False):
+                pass
+            elif (self.comando == [1, 1] and self.isBombaOn == True and self.isLedOn == True):
+                pass
+            elif (self.comando == [1, 0] and self.isBombaOn == False and self.isLedOn == True):
+                pass
+            elif (self.comando == [0, 1] and self.isBombaOn == True and self.isLedOn == False):
+                pass
+            else:
+                client.publish(self.topic, self.comando_str)
+                
+            if self.comando == [1, 0] or self.comando == [1,1]:
+                self.isLedOn = True
+            else:
+                self.isLedOn = False
+            if self.comando == [0, 1] or self.comando == [1,1]:
+                self.isBombaOn = True
+            else:
+                self.isBombaOn = False                
             self.publishApi()
 
             print("Umidade: ",self.umidadeAtual)
