@@ -39,6 +39,9 @@ namespace ApiPlantas.Migrations
                     b.Property<double>("Luminosity")
                         .HasColumnType("float");
 
+                    b.Property<int>("PlantId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("PumpOn")
                         .HasColumnType("bit");
 
@@ -64,6 +67,13 @@ namespace ApiPlantas.Migrations
                     b.Property<double>("Humity")
                         .HasColumnType("float");
 
+<<<<<<< HEAD
+                    b.Property<string>("ImageBase64")
+                        .IsRequired()
+                        .HasColumnType("varchar(max)");
+
+=======
+>>>>>>> 1f73794472cf9a422e527072716d47d7125470d9
                     b.Property<bool>("IsUsed")
                         .HasColumnType("bit");
 

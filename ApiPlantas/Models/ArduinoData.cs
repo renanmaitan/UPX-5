@@ -8,5 +8,6 @@
         public DateTime Time { get; set; }
         public bool PumpOn { get; set; }
         public bool LightOn { get; set; }
+        public int PlantId { get; set; }
     }
 }

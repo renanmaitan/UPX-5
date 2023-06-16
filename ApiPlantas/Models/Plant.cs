@@ -8,5 +8,6 @@
         public double Luminosity { get; set; }
         public double Hours { get; set; }
         public bool IsUsed { get; set; }
+        public string ImageBase64 { get; set; }
     }
 }

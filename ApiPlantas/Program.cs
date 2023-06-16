@@ -36,6 +36,7 @@ app.UseHttpsRedirection();
 
 PlantController(app);
 ArduinoDataController(app);
+app.UseCors(AllowAll);
 
 app.Run();
 
@@ -277,6 +278,51 @@ static void ArduinoDataController(WebApplication app)
         .Produces(StatusCodes.Status404NotFound)
         .WithName("PutArduinoData")
         .WithTags("ArduinoData");
+
+    app.MapGet("/arduinodata/plant/{id}", async (
+        int id, MinimalContextDb context) =>
+    {
+        var plant = await context.Plants.FindAsync(id);
+        if (plant == null)
+        {
+            return Results.NotFound();
+        }
+
+        var arduinoData = await context.ArduinoDatas.Where(x => x.PlantId == id).ToListAsync();
+        if (arduinoData == null)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(arduinoData);
+    })
+        .WithName("GetArduinoDataByPlantId")
+        .WithTags("ArduinoData")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status404NotFound);
+
+
+    app.MapGet("/arduinodata/plant/{id}/last", async( 
+        int id, MinimalContextDb context) =>
+    {
+        var plant = await context.Plants.FindAsync(id);
+        if (plant == null)
+        {
+            return Results.NotFound();
+        }
+
+        var arduinoData = await context.ArduinoDatas.Where(x => x.PlantId == id).OrderByDescending(x => x.Id).FirstOrDefaultAsync();
+        if (arduinoData == null)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(arduinoData);
+    })
+        .WithName("GetLastArduinoDataByPlantId")
+        .WithTags("ArduinoData")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status404NotFound);
 
     app.MapDelete("/arduinodata/{id}", async (
         int id, MinimalContextDb context) =>

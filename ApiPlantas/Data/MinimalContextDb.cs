@@ -42,6 +42,10 @@ namespace ApiPlantas.Data
                 .HasColumnType("bit");
 
             modelBuilder.Entity<Plant>()
+                .Property(p => p.ImageBase64)
+                .HasColumnType("varchar(max)");
+
+            modelBuilder.Entity<Plant>()
                 .ToTable("Plants");
 
             modelBuilder.Entity<ArduinoData>()
@@ -67,6 +71,10 @@ namespace ApiPlantas.Data
             modelBuilder.Entity<ArduinoData>()
                 .Property(p => p.LightOn)
                 .HasColumnType("bit");
+
+            modelBuilder.Entity<ArduinoData>()
+                .Property(p => p.PlantId)
+                .HasColumnType("int");
 
             modelBuilder.Entity<ArduinoData>()
                 .ToTable("ArduinoDatas");
