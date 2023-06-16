@@ -12,9 +12,9 @@ export default function Forms() {
 
   const [plantData, setPlantData] = useState({
     name: "",
-    soil: "",
-    light: "",
-    hoursOfExposure: "",
+    soil: 0,
+    light: 0,
+    hoursOfExposure: 0,
     isUsingLight: false,
     imagePlant: null,
   });
