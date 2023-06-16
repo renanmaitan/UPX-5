@@ -13,8 +13,8 @@ const PlantPage = () => {
   const [plantaClicada, setPlantaClicada] = useState();
   const [actualPlant, setActualPlant] = useState();
   const [arduinoPlant, setArduinoPlant] = useState();
+  const [chart, setChart] = useState(null);
   const chartRef = useRef(null);
-  const chartInitialized = useRef(false);
 
   useEffect(() => {
     fetchPlantData();
@@ -106,81 +106,84 @@ const PlantPage = () => {
   };
 
   useEffect(() => {
-    if (plantContent && chartRef.current && !chartInitialized.current) {
-      const ctx = chartRef.current.getContext("2d");
-
-      const chart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: plantContent.map((plant) => {
-            const date = new Date(plant.time);
-            return `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
-          }),
-          datasets: [
-            {
-              label: "Umidade",
-              data: plantContent.map((plant) => plant.humity),
-              backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-              borderColor: ["rgba(255, 99, 132, 1)"],
-              borderWidth: 2,
-            },
-            {
-              label: "Luminosidade",
-              data: plantContent.map((plant) => plant.luminosity),
-              backgroundColor: ["rgba(54, 162, 235, 0.2)"],
-              borderColor: ["rgba(54, 162, 235, 1)"],
-              borderWidth: 2,
-            },
-          ],
-        },
-        options: {
-          animations: {
-            x: {
-              type: "number",
-              easing: "linear",
-              duration: 500,
-              from: NaN, // the point is initially skipped
-              delay(ctx) {
-                if (ctx.type !== "data" || ctx.xStarted) {
-                  return 0;
-                }
-                ctx.xStarted = true;
-                return ctx.index * 500;
-              },
-            },
-            y: {
-              type: "number",
-              easing: "linear",
-              duration: 500,
-              from: NaN, // the point is initially skipped
-              delay(ctx) {
-                if (ctx.type !== "data" || ctx.yStarted) {
-                  return 0;
-                }
-                ctx.yStarted = true;
-                return ctx.index * 500;
-              },
-            },
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-            },
-          },
-        },
+    if (plantContent && chart && !chart.data.labels.length) {
+      chart.data.labels = plantContent.map((plant) => {
+        const date = new Date(plant.time);
+        return `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
       });
-
-      chartInitialized.current = true;
+      chart.data.datasets[0].data = plantContent.map((plant) => plant.humity);
+      chart.data.datasets[1].data = plantContent.map((plant) => plant.luminosity);
+      chart.update();
     }
+  }, [plantContent, chart]);
+
+  useEffect(() => {
+    const ctx = chartRef.current.getContext("2d");
+    const newChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: "Umidade",
+            data: [],
+            backgroundColor: ["rgba(255, 99, 132, 0.2)"],
+            borderColor: ["rgba(255, 99, 132, 1)"],
+            borderWidth: 2,
+          },
+          {
+            label: "Luminosidade",
+            data: [],
+            backgroundColor: ["rgba(54, 162, 235, 0.2)"],
+            borderColor: ["rgba(54, 162, 235, 1)"],
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        animations: {
+          x: {
+            type: "number",
+            easing: "linear",
+            duration: 500,
+            from: NaN,
+            delay(ctx) {
+              if (ctx.type !== "data" || ctx.xStarted) {
+                return 0;
+              }
+              ctx.xStarted = true;
+              return ctx.index * 500;
+            },
+          },
+          y: {
+            type: "number",
+            easing: "linear",
+            duration: 500,
+            from: NaN,
+            delay(ctx) {
+              if (ctx.type !== "data" || ctx.yStarted) {
+                return 0;
+              }
+              ctx.yStarted = true;
+              return ctx.index * 500;
+            },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+    setChart(newChart);
 
     return () => {
-      if (chartRef.current && chartInitialized.current) {
-        const ctx = chartRef.current.getContext("2d");
-        Chart.getChart(ctx)?.destroy();
-        chartInitialized.current = false;
+      if (chart) {
+        chart.destroy();
       }
     };
-  }, [plantContent]);
+  }, []);
 
   const choosePlant = async () => {
     try {
@@ -199,7 +202,6 @@ const PlantPage = () => {
     setPlantaClicada(selectedPlantId);
   };
 
-  // decode a base64 to image
   const decodePhoto = (imageBase64) => {
     return `data:image/png;base64,${imageBase64}`;
   };
@@ -213,7 +215,6 @@ const PlantPage = () => {
             <h3>Informações da planta</h3>
             <div>
               <div className={styles.plantInfoItem}>
-                {/* use the decoding funciton */}
                 {actualPlant?.imageBase64 && (
                   <img
                     src={`data:image/png;base64,${actualPlant?.imageBase64}`}
@@ -225,34 +226,40 @@ const PlantPage = () => {
               </div>
 
               <div className={styles.plantInfoItem}>
-                <Image src={luzIcon} alt="Luz" />
-                <p>Luminosidade ideal: {actualPlant?.luminosity}</p>
-                <p>Luminosidade atual: {arduinoPlant?.luminosity}</p>
+                <img src={umidadeIcon} alt="Umidade Icon" />
+                <p>Umidade: {arduinoPlant?.humity}%</p>
               </div>
+
               <div className={styles.plantInfoItem}>
-                <Image src={umidadeIcon} alt="Umidade" />
-                <p>Umidade ideal: {actualPlant?.humity}</p>
-                <p>Umidade atual: {arduinoPlant?.humity}</p>
+                <img src={luzIcon} alt="Luz Icon" />
+                <p>Luminosidade: {arduinoPlant?.luminosity}</p>
               </div>
             </div>
           </div>
+
+          <div className={styles.plantSelect}>
+            <h3>Selecione uma planta</h3>
+            <select onChange={handlePlantSelect}>
+              <option value="">-- Selecione --</option>
+              {plantData.map((plant) => (
+                <option key={plant.id} value={plant.id}>
+                  {plant.name}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={choosePlant}
+              disabled={!plantaClicada || plantaClicada === actualPlant?.id}
+            >
+              Escolher planta
+            </button>
+          </div>
         </div>
       </div>
-      <div className={styles.selectGroup}>
-        <select name="plant" id="plant" onChange={handlePlantSelect}>
-          <option value="0">Selecione uma planta</option>
-          {plantData.map((plant) => (
-            <option key={plant.id} value={plant.id}>
-              {plant.name}
-            </option>
-          ))}
-        </select>
-        <button onClick={choosePlant}>Monitorar planta</button>
-      </div>
+
       <div className={styles.chartContainer}>
-        <canvas id="chart" ref={chartRef}></canvas>
+        <canvas ref={chartRef}></canvas>
       </div>
-      {/* Restante do código... */}
     </div>
   );
 };
