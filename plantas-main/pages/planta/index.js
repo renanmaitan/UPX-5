@@ -117,17 +117,22 @@ const PlantPage = () => {
     }
   }, [plantContent, chart]);
 
-  useEffect(() => {
+
+  const createChart = (chartRef, data) => {
     const ctx = chartRef.current.getContext("2d");
-    Chart.getChart(ctx)?.destroy();
+
+    if (chart) {
+      chart.destroy();
+    }
+
     const newChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: [],
+        labels: data.labels,
         datasets: [
           {
             label: "Umidade",
-            data: [],
+            data: data.humity,
             backgroundColor: ["rgba(255, 99, 132, 0.2)"],
             borderColor: ["rgba(255, 99, 132, 1)"],
             borderWidth: 2,
@@ -135,7 +140,7 @@ const PlantPage = () => {
           },
           {
             label: "Luminosidade",
-            data: [],
+            data: data.luminosity,
             backgroundColor: ["rgba(54, 162, 235, 0.2)"],
             borderColor: ["rgba(54, 162, 235, 1)"],
             borderWidth: 2,
@@ -179,14 +184,24 @@ const PlantPage = () => {
         },
       },
     });
-    setChart(newChart);
 
-    return () => {
-      if (chart) {
-        chart.destroy();
-      }
-    };
-  }, []);
+    setChart(newChart);
+  };
+
+  useEffect(() => {
+    if (plantContent && chart && plantContent.length > 0) {
+      const chartData = {
+        labels: plantContent.map((plant) => {
+          const date = new Date(plant.time);
+          return `${date.getHours()}:${date.getMinutes()}`;
+        }),
+        humity: plantContent.map((plant) => plant.humity),
+        luminosity: plantContent.map((plant) => plant.luminosity),
+      };
+
+      createChart(chartRef, chartData);
+    }
+  }, [plantContent, chart]);
 
   const choosePlant = async () => {
     try {
