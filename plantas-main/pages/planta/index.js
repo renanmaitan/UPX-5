@@ -109,7 +109,7 @@ const PlantPage = () => {
     if (plantContent && chart && !chart.data.labels.length) {
       chart.data.labels = plantContent.map((plant) => {
         const date = new Date(plant.time);
-        return `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+        return `${date.getHours()}:${date.getMinutes()}`;
       });
       chart.data.datasets[0].data = plantContent.map((plant) => plant.humity);
       chart.data.datasets[1].data = plantContent.map((plant) => plant.luminosity);
@@ -119,6 +119,7 @@ const PlantPage = () => {
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
+    Chart.getChart(ctx)?.destroy();
     const newChart = new Chart(ctx, {
       type: "line",
       data: {
@@ -130,6 +131,7 @@ const PlantPage = () => {
             backgroundColor: ["rgba(255, 99, 132, 0.2)"],
             borderColor: ["rgba(255, 99, 132, 1)"],
             borderWidth: 2,
+            pointRadius: 0,
           },
           {
             label: "Luminosidade",
@@ -137,6 +139,7 @@ const PlantPage = () => {
             backgroundColor: ["rgba(54, 162, 235, 0.2)"],
             borderColor: ["rgba(54, 162, 235, 1)"],
             borderWidth: 2,
+            pointRadius: 0,
           },
         ],
       },
@@ -145,27 +148,27 @@ const PlantPage = () => {
           x: {
             type: "number",
             easing: "linear",
-            duration: 500,
+            duration: 100,
             from: NaN,
             delay(ctx) {
               if (ctx.type !== "data" || ctx.xStarted) {
                 return 0;
               }
               ctx.xStarted = true;
-              return ctx.index * 500;
+              return ctx.index * 100;
             },
           },
           y: {
             type: "number",
             easing: "linear",
-            duration: 500,
+            duration: 100,
             from: NaN,
             delay(ctx) {
               if (ctx.type !== "data" || ctx.yStarted) {
                 return 0;
               }
               ctx.yStarted = true;
-              return ctx.index * 500;
+              return ctx.index * 100;
             },
           },
         },
@@ -196,6 +199,8 @@ const PlantPage = () => {
   };
 
   const handlePlantSelect = (e) => {
+    const ctx = chartRef.current.getContext("2d");
+    Chart.getChart(ctx)?.destroy();
     const selectedPlantId = e.target.value;
     fetchPlantContent(selectedPlantId);
     setPlantContent([]);
