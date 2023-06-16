@@ -1,22 +1,22 @@
-'use client'
 import React, { useEffect, useState } from "react";
 import styles from "./Forms.module.css";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export default function Forms() {
   const showToastMessage = () => {
-    toast.success({
-      position: toast.POSITION.TOP_RIGHT
+    toast.success("Planta cadastrada com sucesso!", {
+      position: toast.POSITION.TOP_RIGHT,
     });
   };
-
 
   const [plantData, setPlantData] = useState({
     name: "",
     soil: "",
     light: "1",
-    horasDeExposicao: "",
+    hoursOfExposure: "",
     isUsingLight: false,
+    imagePlant: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -42,43 +42,60 @@ export default function Forms() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    console.log(plantData);
+    try {
+      const base64String = await convertToBase64(plantData.imagePlant);
 
-    fetch('https://localhost:7298/plant', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
+      const requestData = {
         name: plantData.name,
         humidity: plantData.soil,
         luminosity: plantData.light,
-        hours: plantData.horasDeExposicao,
-        isUsed: false
-      })
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-        toast.success('Planta cadastrada com sucesso!')
+        hours: plantData.hoursOfExposure,
+        isUsed: false,
+        imageBase64: base64String,
+      };
+
+      const response = await fetch("https://localhost:7298/plant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        console.log("Success:", requestData);
+        showToastMessage();
+      } else {
+        throw new Error("Error: Failed to register plant.");
       }
-      )
-      .catch((error) => {
-        console.error('Error:', error);
-        toast.error('Erro ao cadastrar planta!')
-      }
-      );
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Erro ao cadastrar planta!");
+    }
+  };
 
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
 
+      reader.onload = () => {
+        const base64String = reader.result.split(",")[1];
+        resolve(base64String);
+      };
 
+      reader.onerror = () => {
+        reject(new Error("Failed to convert image to base64."));
+      };
 
+      reader.readAsDataURL(file);
+    });
   };
 
   return (
@@ -126,30 +143,37 @@ export default function Forms() {
             </select>
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="horasDeExposicao">
+            <label htmlFor="hoursOfExposure">
               Horas de exposição à luz solar
             </label>
             <input
               type="number"
-              id="horasDeExposicao"
-              value={plantData.horasDeExposicao}
+              id="hoursOfExposure"
+              value={plantData.hoursOfExposure}
               onChange={handleInputChange}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="imagePlant">Imagem da planta</label>
+            <input
+              type="file"
+              id="imagePlant"
+              onChange={(event) =>
+                setPlantData((prevState) => ({
+                  ...prevState,
+                  imagePlant: event.target.files[0],
+                }))
+              }
             />
           </div>
 
           {/* enviar */}
           <div className={styles.formGroup}>
-            <button type="submit"
-              onClick={showToastMessage}
-            >Enviar</button>
+            <button type="submit">Enviar</button>
           </div>
         </form>
       </div>
       <ToastContainer />
-
     </div>
   );
 }
-
-
-

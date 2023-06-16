@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ApiPlantas.Migrations
 {
-    public partial class inital : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -37,12 +37,8 @@ namespace ApiPlantas.Migrations
                     Humity = table.Column<double>(type: "float", nullable: false),
                     Luminosity = table.Column<double>(type: "float", nullable: false),
                     Hours = table.Column<double>(type: "float", nullable: false),
-<<<<<<<< HEAD:ApiPlantas/Migrations/20230605225850_initial.cs
                     IsUsed = table.Column<bool>(type: "bit", nullable: false),
                     ImageBase64 = table.Column<string>(type: "varchar(max)", nullable: false)
-========
-                    IsUsed = table.Column<bool>(type: "bit", nullable: false)
->>>>>>>> 1f73794472cf9a422e527072716d47d7125470d9:ApiPlantas/Migrations/20230602215626_inital.cs
                 },
                 constraints: table =>
                 {

@@ -6,25 +6,25 @@
     align-items: center;
     justify-content: center;
     padding: 0 5%;
-    }
-    
-    .hero h1 {
+}
+
+.hero h1 {
     font-size: 3rem;
     font-weight: 700;
     color: #fff;
     text-transform: uppercase;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
     margin-bottom: 20px;
-    }
-    
-    .hero p {
+}
+
+.hero p {
     font-size: 1.5rem;
     font-weight: 400;
     color: #fff;
     text-align: center;
-    }
-    
-    .form {
+}
+
+.form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -32,9 +32,9 @@
     background: #D9D9D9;
     padding: 50px 5%;
     height: 100%;
-    }
-    
-    .form form {
+}
+
+.form form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -46,34 +46,34 @@
     max-width: 100%;
     height: 100%;
     border-radius: 10px;
-    }
-    
-    .form form h2 {
+}
+
+.form form h2 {
     font-size: 2rem;
     font-weight: 700;
     color: #fff;
     text-transform: uppercase;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
     margin-bottom: 20px;
-    }
-    
-    .formGroup {
+}
+
+.formGroup {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
     gap: 10px;
     width: 100%;
-    }
-    
-    .formGroup label {
+}
+
+.formGroup label {
     font-size: 1.2rem;
     font-weight: 700;
     color: #fff;
-    }
-    
-    .formGroup input[type="text"],
-    .formGroup input[type="file"] {
+}
+
+.formGroup input[type="text"],
+.formGroup input[type="file"] {
     width: 95%;
     height: 40px;
     border: none;
@@ -82,21 +82,22 @@
     font-size: 1.0rem;
     font-weight: 400;
     color: #000;
-    }
-    
-    .formGroup input[type="text"]:focus,
-    .formGroup input[type="file"]:focus {
+}
+
+.formGroup input[type="text"]:focus,
+.formGroup input[type="file"]:focus {
     outline: none;
     border: 1px solid #fff;
-    }
-    
-    .formGroup input[type="text"]::placeholder,
-    .formGroup input[type="file"]::placeholder {
+}
+
+.formGroup input[type="text"]::placeholder,
+.formGroup input[type="file"]::placeholder {
     font-size: 1.0rem;
     font-weight: 400;
     color: #000;
-    }
-    .formGroup input[type="number"]{
+}
+
+.formGroup input[type="number"] {
     width: 95%;
     height: 40px;
     border: none;
@@ -105,9 +106,10 @@
     font-size: 1.0rem;
     font-weight: 400;
     color: #000;
-    
-    }
-    .formGroup select {
+
+}
+
+.formGroup select {
     width: 99%;
     height: 40px;
     border: none;
@@ -116,31 +118,31 @@
     font-size: 1.0rem;
     font-weight: 400;
     color: #000;
-    }
+}
 
-    .formGroup select:focus {
+.formGroup select:focus {
     outline: none;
     border: 1px solid #fff;
-    }
+}
 
-    .formGroup select option{
+.formGroup select option {
     font-size: 1.0rem;
     font-weight: 400;
     height: 50px;
     color: #000;
-    
-    }
-    
-    .formGroup button[type="submit"] {
+
+}
+
+.formGroup button[type="submit"] {
     padding: 10px 10%;
     border: none;
     border-radius: 5px;
     background-color: #219653;
     color: white;
     align-self: flex-end;
-    }
-    
-    .formGroup button[type="submit"]:hover {
+}
+
+.formGroup button[type="submit"]:hover {
     cursor: pointer;
     background-color: #1E7E34;
-    }
+}

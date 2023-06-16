@@ -6,6 +6,8 @@ const nextConfig = {
     react: 'umd react',
     'styled-components': 'umd styled-components',
   },
+ 
+
 }
 
 module.exports = nextConfig

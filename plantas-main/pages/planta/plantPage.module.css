@@ -1,8 +1,12 @@
-.hero {
-    height: 30vh;
-    background: #24EF7F;
-    padding: 100px 5%;
+.container{
+}
 
+
+/* Hero Section */
+.hero {
+    height: 50vh;
+    background: #24EF7F;
+    padding: 50px 5%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -17,14 +21,19 @@
     text-transform: uppercase;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
     margin-bottom: 20px;
-
 }
 
+/* Select Group */
 .selectGroup {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    padding: 50px 5%;
+
+    width: 50%;
+    margin: 0 auto;
+
 }
 
 .selectGroup label {
@@ -41,120 +50,201 @@
     height: 40px;
     border-radius: 5px;
     border: none;
-    background: #fff;
-    padding: 0 10px;
+    background: #d7d7d7;
+    padding: 0 1%;
     font-size: 1rem;
     font-weight: 700;
-    color: #000;
+    color: #272727;
     text-transform: uppercase;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
     margin-bottom: 20px;
 }
 
+.selectGroup option {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f1f1f;
+    text-transform: uppercase;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
+    padding: 2px 5%;
+}
+
+.selectGroup button {
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    border: none;
+    background: #24EF7F;
+    padding: 0 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
+    margin-bottom: 20px;
+}
+
+.selectGroup button:hover {
+    background: #34a064;
+    color: #ffffff;
+    transition: 0.3s;
+}
+
+/* Plant Content */
 .plantContent {
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-direction: column;
     gap: 20px;
-
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
     width: 50%;
     margin: 120px auto;
     padding: 0 5%;
 }
 
-.plantStats{
+/* Plant Stats */
+.plantStats {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     width: 100%;
     padding: 20px 0;
-
     border-bottom: 1px solid #9a9a9a;
 }
-.plantStatsItem{
+
+.plantStatsItem {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 10px;
-
 }
 
-.plantStatsItem h2{
+.plantStatsItem h2,
+.plantStatsItem p {
     font-size: 1.4rem;
     font-weight: 700;
     color: #000;
     text-transform: uppercase;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
-
     font-family: 'Roboto', sans-serif;
 }
-.plantStatsItem p{
+
+.plantStatsItem p {
     font-size: 1.2rem;
-    font-weight: 700;
-    color: #000;
-    text-transform: uppercase;
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
-
-    font-family: 'Roboto', sans-serif;
 }
 
-.plantInfo{
+/* Plant Info */
+.plantInfo {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 20px;
-
     width: 100%;
     padding: 20px 0;
 }
 
-.plantInfoItem{
+.plantInfoItem {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     flex-direction: row;
     gap: 10px;
-
     width: 100%;
     padding: 20px 0;
-
     border-bottom: 1px solid #9a9a9a;
 }
-.plantInfoItem .plantInfoItemTitle h2{
+
+.plantInfoItem .plantInfoItemTitle h2,
+.plantInfoItem .plantInfoItemTitle h3 {
     font-size: 1.4rem;
     font-weight: 700;
     color: #000;
     text-transform: uppercase;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
-
     font-family: 'Roboto', sans-serif;
 }
-.plantInfoItem .plantInfoItemTitle h3{
+
+.plantInfoItem .plantInfoItemTitle h3 {
     font-size: 1.0rem;
     font-weight: 700;
-    color: #000;
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
-
-    font-family: 'Roboto', sans-serif;
 }
 
-.plantInfoContent p{
-    /* recipe list styling */
+.plantInfoContent p {
+    /* Recipe list styling */
     max-width: 80%;
     margin: 0 auto;
-
     letter-spacing: 0.5px;
     line-height: 1.5rem;
     font-family: 'Roboto', sans-serif;
     font-size: 1.2rem;
     font-weight: 400;
     color: #000;
-    text-align: justify;
-
+    text-align: start;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
+}
 
+.plantHeaderContainer {
+    display: flex;
+    justify-content: space-around;
+    width: 100% !important;
+    height: 290px;
+    margin-top: 50px;
+}
+
+.plantInfo {
+
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    padding: 20px;
+
+    max-width: 30%;
+
+
+}
+
+.plantInfo h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+
+}
+
+.plantInfo>div {
+    display: flex;
+    gap: 50px;
+}
+
+.plantInfoItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px;
+    padding: 50px 5%;
+}
+
+.plantInfoItem img {
+    margin-bottom: 40px;
+    height: 100px;
+    width: 100px;
+}
+
+.plantInfoItem p {
+    margin: 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.chartContainer{
+    width: 50%;
+    margin: 0 auto;
+    padding: 1px 0;
 }

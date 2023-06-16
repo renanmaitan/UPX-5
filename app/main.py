@@ -1,22 +1,21 @@
-import random
-from paho.mqtt import client as mqtt_client
 import json
 import requests
 import time
 import urllib3
 import datetime
 
-#request = requests.get('https://localhost:7298/')
+padrao = "http://192.168.170.220"
+
+ligarLED = padrao + "/N"
+desligarLED = padrao + "/F"
+ligarBomba = padrao + "/L"
+desligarBomba = padrao + "/D"
+coletarDados = padrao + "/S"
+
+
 
 class App():
     def __init__(self):
-        self.broker = 'ec2-3-128-199-110.us-east-2.compute.amazonaws.com'
-        self.port = 1883
-        self.topic = "mqtt/request"
-        self.topic_leituras = "mqtt/leituras"
-        # generate client ID with pub prefix randomly
-        self.client_id = f'python-mqtt-{random.randint(0, 1000)}'
-        self.device_id = 'device_1'
         self.isLedOn = False
         self.isBombaOn = False
         self.id = 2
@@ -33,32 +32,19 @@ class App():
         self.tempoOffLuz = 0
         self.idArduino = 0
         self.comando = [0, 0]
-        self.publishApi()
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-    def connect_mqtt(self):
-        def on_connect(client, userdata, flags, rc):
-            if rc == 0:
-                print("Connected to MQTT Broker!")
-            else:
-                print("Failed to connect, return code %d\n", rc)
-        
-        client = mqtt_client.Client(self.client_id)
-        client.on_connect = on_connect
-        client.connect(self.broker, self.port)
-        return client
 
     def publishApi(self):
         current_datetime = datetime.datetime.now()
         datetime_str = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         arduino_Json = {
+            "plantId" : self.planta['id'],
             "humity": self.umidadeAtual,
             "luminosity": self.luminosidadeAtual,
             "time" : datetime_str,
             "lightOn": self.isLedOn,
             "pumpOn": self.isBombaOn,
         }
-        requests.post(f'https://localhost:7298/arduino',json=arduino_Json,verify=False)
         requests.post('https://localhost:7298/arduino',json=arduino_Json,verify=False)
         temp = requests.get('https://localhost:7298/arduino/last',verify=False)
         temp = json.loads(temp.text)
@@ -73,12 +59,12 @@ class App():
                 self.luminosidadeIdeal = self.planta['luminosity']
                 self.horasDeLuz = self.planta['hours']
 
-        self.arduino = requests.get(f'https://localhost:7298/arduino/last',verify=False)
-        if self.arduino is not None:
-            arduino_text = self.arduino.text
-            self.arduino = json.loads(self.arduino.text)
-            self.isLedOn = self.arduino['lightOn']
-            self.isBombaOn = self.arduino['pumpOn']
+        # self.arduino = requests.get(f'https://localhost:7298/arduino/last',verify=False)
+        # if self.arduino is not None:
+        #     arduino_text = self.arduino.text
+        #     self.arduino = json.loads(self.arduino.text)
+        #     self.isLedOn = self.arduino['lightOn']
+        #     self.isBombaOn = self.arduino['pumpOn']
             # planta_Json = {
             #     "humity": 0,
             #     "luminosity": 0,
@@ -87,16 +73,12 @@ class App():
             # }
             # requests.post('https://localhost:7298/plant',json=planta_Json,verify=False)
             # requests.delete(f'https://localhost:7298/plant/{id}',verify=False)
-
-<<<<<<< HEAD
-
-=======
     def getPlanta(self):
         self.planta = requests.get('https://localhost:7298/plant/actual',verify=False)
         temp = json.loads(self.planta.text)
         self.idArduino = temp['id']
 
-    def decisaoLed(self, client, msg):
+    def decisaoLed(self):
         if self.tempoDeExecucao >= 86400:
             self.start = time.time()
             self.tempoDeLuzOnPorDia = 0
@@ -104,79 +86,75 @@ class App():
 
             self.tempoDeLuzOnPorDia = time.time() - self.start - self.tempoOffLuz
             if self.isLedOn:
-                msg[0] = 0
+                response = requests.get(desligarLED)
+                if response.status_code == 200:
+                    print("LED desligado!")
+                    self.isLedOn = False
+                else:
+                    print("Erro ao desligar LED!", response.status_code)
         else:
             self.tempoOffLuz = time.time() - self.start - self.tempoDeLuzOnPorDia
             if self.tempoDeLuzOnPorDia < (self.horasDeLuz)*3600:
                 if not self.isLedOn:
-                    msg[0] = 1
+                    response = requests.get(ligarLED)
+                    if response.status_code == 200:
+                        print("LED ligado!")
+                        self.isLedOn = True
+                    else:   
+                        print("Erro ao ligar LED!", response.status_code)
             else:
                 if self.isLedOn:
-                    msg[0] = 0
-        return msg
-
-    def decisaoBomba(self, client, msg):
-        print(self.umidadeIdeal)
-        print(self.isBombaOn)
+                    response = requests.get(desligarLED)
+                    if response.status_code == 200:
+                        print("LED desligado!")
+                        self.isLedOn = False
+                    else:
+                        print("Erro ao desligar LED!", response.status_code)
+    
+    def decisaoBomba(self):
         if self.umidadeAtual < self.umidadeIdeal:
             if not self.isBombaOn:
-                msg[1] = 1
+                response = requests.get(ligarBomba)
+                if response.status_code == 200:
+                    print("Bomba ligada!")
+                    self.isBombaOn = True
+                    time.sleep(1.75)
+                    reponse2 = requests.get(desligarBomba)
+                    if reponse2.status_code == 200:
+                        print("Bomba desligada!")
+                        self.isBombaOn = False
+                    else:
+                        print("Erro ao desligar bomba!", reponse2.status_code)
+                else:   
+                    print("Erro ao ligar bomba!", response.status_code)
         else:
             if self.isBombaOn:
-                msg[1] = 0
-        return msg
->>>>>>> 1f73794472cf9a422e527072716d47d7125470d9
+                response = requests.get(desligarBomba)
+                if response.status_code == 200:
+                    print("Bomba desligada!")
+                    self.isBombaOn = False
+                else:   
+                    print("Erro ao desligar bomba!", response.status_code)
 
-    def subscribe(self,client: mqtt_client):
-        def on_message(client, userdata, msg):
-            self.getPlanta()
-            self.getDataAPI()
-            y = json.loads(msg.payload.decode())
-            self.umidadeAtual = float((y['umidade']))
-            self.luminosidadeAtual = float((y['luminosidade']))
+app = App()
 
-            self.tempoDeExecucao = time.time() - self.start
-            self.comando = self.decisaoLed(client, self.comando)
-            self.comando = self.decisaoBomba(client, self.comando)
-            print("self.comando: ",self.comando)
-            print("Umidade ideal",self.umidadeIdeal)
-            self.comando_str = ', '.join(str(x) for x in self.comando)
-            print("Bomba:",self.isBombaOn)
-            print("Led:", self.isLedOn)
-            if (self.comando == [0, 0] and self.isBombaOn == False and self.isLedOn == False):
-                pass
-            elif (self.comando == [1, 1] and self.isBombaOn == True and self.isLedOn == True):
-                pass
-            elif (self.comando == [1, 0] and self.isBombaOn == False and self.isLedOn == True):
-                pass
-            elif (self.comando == [0, 1] and self.isBombaOn == True and self.isLedOn == False):
-                pass
-            else:
-                client.publish(self.topic, self.comando_str)
-                
-            if self.comando == [1, 0] or self.comando == [1,1]:
-                self.isLedOn = True
-            else:
-                self.isLedOn = False
-            if self.comando == [0, 1] or self.comando == [1,1]:
-                self.isBombaOn = True
-            else:
-                self.isBombaOn = False                
-            self.publishApi()
+while True:
+    app.getPlanta()
+    app.getDataAPI()
+    # print(app.umidadeIdeal)
+    # print(app.isBombaOn)
+    response = requests.get(coletarDados)
+    if response.status_code == 200:
+        umidade, luminosidade = response.text.strip().split(",")
+        #converte valor para inteiro
+        app.umidadeAtual = float(umidade)
+        app.luminosidadeAtual = float(luminosidade)
+        app.publishApi()
+        print("Umidade: ", app.umidadeAtual)
+        print("Luminosidade: ", app.luminosidadeAtual)
+        app.decisaoLed()
+        app.decisaoBomba()
+    else:   
+        print("Erro ao enviar requisição!", response.status_code)
 
-            print("Umidade: ",self.umidadeAtual)
-            print("Luminosidade: ",self.luminosidadeAtual)
-            print("Luminosidade Ideal: ",self.luminosidadeIdeal)
-            #print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
-        
-        client.subscribe(self.topic_leituras)
-        client.on_message = on_message
-        
-    def main(self):
-        client = self.connect_mqtt()
-        self.subscribe(client)
-        client.loop_forever()
-        
-if __name__ == '__main__':
-    app = App()
-    app.main()        
+    time.sleep(3)

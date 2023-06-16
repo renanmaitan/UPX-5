@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApiPlantas.Migrations
 {
     [DbContext(typeof(MinimalContextDb))]
-<<<<<<<< HEAD:ApiPlantas/Migrations/20230605225850_initial.Designer.cs
-    [Migration("20230605225850_initial")]
+    [Migration("20230614215855_initial")]
     partial class initial
-========
-    [Migration("20230602215626_inital")]
-    partial class inital
->>>>>>>> 1f73794472cf9a422e527072716d47d7125470d9:ApiPlantas/Migrations/20230602215626_inital.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -74,13 +69,10 @@ namespace ApiPlantas.Migrations
                     b.Property<double>("Humity")
                         .HasColumnType("float");
 
-<<<<<<<< HEAD:ApiPlantas/Migrations/20230605225850_initial.Designer.cs
                     b.Property<string>("ImageBase64")
                         .IsRequired()
                         .HasColumnType("varchar(max)");
 
-========
->>>>>>>> 1f73794472cf9a422e527072716d47d7125470d9:ApiPlantas/Migrations/20230602215626_inital.Designer.cs
                     b.Property<bool>("IsUsed")
                         .HasColumnType("bit");
 

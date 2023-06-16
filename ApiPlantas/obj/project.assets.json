@@ -2340,32 +2340,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Helmont\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\210652\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Helmont\\OneDrive\\Área de Trabalho\\Faculdade\\5 semestre\\UPX-5\\ApiPlantas\\ApiPlantas.csproj",
+      "projectUniqueName": "C:\\Users\\210652\\Documents\\GitHub\\UPX-5\\ApiPlantas\\ApiPlantas.csproj",
       "projectName": "ApiPlantas",
-      "projectPath": "C:\\Users\\Helmont\\OneDrive\\Área de Trabalho\\Faculdade\\5 semestre\\UPX-5\\ApiPlantas\\ApiPlantas.csproj",
-      "packagesPath": "C:\\Users\\Helmont\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Helmont\\OneDrive\\Área de Trabalho\\Faculdade\\5 semestre\\UPX-5\\ApiPlantas\\obj\\",
+      "projectPath": "C:\\Users\\210652\\Documents\\GitHub\\UPX-5\\ApiPlantas\\ApiPlantas.csproj",
+      "packagesPath": "C:\\Users\\210652\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\210652\\Documents\\GitHub\\UPX-5\\ApiPlantas\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Helmont\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\210652\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -2426,7 +2418,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.408\\RuntimeIdentifierGraph.json"
       }
     }
   }

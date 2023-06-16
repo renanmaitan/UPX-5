@@ -1,112 +1,260 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styles from "./plantPage.module.css";
-import luzIcon from "../../public/assets/icon1.svg"
-import umidadeIcon from '../../public/assets/icon2.svg'
-import abacaxi from '../../public/assets/cabaxi.png'
-import Image from 'next/image'
-export default function PlantPage() {
+import luzIcon from "../../public/assets/icon1.svg";
+import umidadeIcon from "../../public/assets/icon2.svg";
+import abacaxi from "../../public/assets/cabaxi.png";
+import Image from "next/image";
+import { Chart } from "chart.js/auto";
 
-  const [plantData, setPlantData] = useState()
+const PlantPage = () => {
+  const [plantData, setPlantData] = useState([]);
+  const [plantContent, setPlantContent] = useState([]);
+  const [names, setNames] = useState([]);
+  const [plantaClicada, setPlantaClicada] = useState();
+  const [actualPlant, setActualPlant] = useState();
+  const [arduinoPlant, setArduinoPlant] = useState();
+  const chartRef = useRef(null);
+  const chartInitialized = useRef(false);
 
   useEffect(() => {
-    fetch('https://localhost:7298/plant', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-        setPlantData(data)
-      })
-      .catch((error) => {
-        console.error('Error:', error);
+    fetchPlantData();
+    fetchActualPlantData();
+    const interval = setInterval(() => {
+      fetchPlantData();
+      fetchActualPlantData();
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchPlantData = async () => {
+    try {
+      const response = await fetch("https://localhost:7298/plant", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-  }, [])
+      const data = await response.json();
+      console.log("Success:", data);
+      setPlantData(data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const fetchArduinoPlantData = async (data) => {
+    try {
+      const responseContent = await fetch(
+        `https://localhost:7298/arduinodata/plant/${data.id}/last`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const dataContent = await responseContent.json();
+      console.log("Success planta:", dataContent);
+      setArduinoPlant(dataContent);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const fetchActualPlantData = async () => {
+    try {
+      const responseContent = await fetch(
+        "https://localhost:7298/plant/actual",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const dataContent = await responseContent.json();
+      console.log("Arduino planta:", dataContent);
+      setActualPlant(dataContent);
+      fetchArduinoPlantData(dataContent);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const fetchPlantContent = async (plantId) => {
+    try {
+      const responseContent = await fetch(
+        `https://localhost:7298/arduinodata/plant/${plantId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const dataContent = await responseContent.json();
+      console.log("Success planta:", dataContent);
+      setPlantContent(dataContent);
+      setNames((currentNames) => [
+        ...currentNames,
+        ...dataContent.map((plant) => plant.id),
+      ]);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (plantContent && chartRef.current && !chartInitialized.current) {
+      const ctx = chartRef.current.getContext("2d");
+
+      const chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: plantContent.map((plant) => {
+            const date = new Date(plant.time);
+            return `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+          }),
+          datasets: [
+            {
+              label: "Umidade",
+              data: plantContent.map((plant) => plant.humity),
+              backgroundColor: ["rgba(255, 99, 132, 0.2)"],
+              borderColor: ["rgba(255, 99, 132, 1)"],
+              borderWidth: 2,
+            },
+            {
+              label: "Luminosidade",
+              data: plantContent.map((plant) => plant.luminosity),
+              backgroundColor: ["rgba(54, 162, 235, 0.2)"],
+              borderColor: ["rgba(54, 162, 235, 1)"],
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          animations: {
+            x: {
+              type: "number",
+              easing: "linear",
+              duration: 500,
+              from: NaN, // the point is initially skipped
+              delay(ctx) {
+                if (ctx.type !== "data" || ctx.xStarted) {
+                  return 0;
+                }
+                ctx.xStarted = true;
+                return ctx.index * 500;
+              },
+            },
+            y: {
+              type: "number",
+              easing: "linear",
+              duration: 500,
+              from: NaN, // the point is initially skipped
+              delay(ctx) {
+                if (ctx.type !== "data" || ctx.yStarted) {
+                  return 0;
+                }
+                ctx.yStarted = true;
+                return ctx.index * 500;
+              },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+
+      chartInitialized.current = true;
+    }
+
+    return () => {
+      if (chartRef.current && chartInitialized.current) {
+        const ctx = chartRef.current.getContext("2d");
+        Chart.getChart(ctx)?.destroy();
+        chartInitialized.current = false;
+      }
+    };
+  }, [plantContent]);
+
+  const choosePlant = async () => {
+    try {
+      await fetch(`https://localhost:7298/plant/${plantaClicada}/actual`, {
+        method: "PUT",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handlePlantSelect = (e) => {
+    const selectedPlantId = e.target.value;
+    fetchPlantContent(selectedPlantId);
+    setPlantContent([]);
+    setPlantaClicada(selectedPlantId);
+  };
+
+  // decode a base64 to image
+  const decodePhoto = (imageBase64) => {
+    return `data:image/png;base64,${imageBase64}`;
+  };
 
   return (
-    <div>
+    <div className={styles.container}>
       <div className={styles.hero}>
         <h1>Escolha uma planta e deixe o sistema cuidar da planta por você</h1>
-        <div className={styles.selectGroup}>
-          <label htmlFor="name">Nome da planta</label>
-          <select>
-            {
-              plantData?.map((plant) => {
-                return (
-                  <option value={plant.name}>{plant.name}</option>
-                )
-              }
-              )
-            }
-          </select>
-        </div>
-      </div>
+        <div className={styles.plantHeaderContainer}>
+          <div className={styles.plantInfo}>
+            <h3>Informações da planta</h3>
+            <div>
+              <div className={styles.plantInfoItem}>
+                {/* use the decoding funciton */}
+                {actualPlant?.imageBase64 && (
+                  <img
+                    src={`data:image/png;base64,${actualPlant?.imageBase64}`}
+                    alt="Base64 Image"
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                )}
+                <p>{actualPlant?.name}</p>
+              </div>
 
-      <div className={styles.plantContent}>
-        <div className={styles.plantStats}>
-          <div className={styles.plantStatsItem}>
-            <Image
-              src={umidadeIcon}
-              width={250}
-              height={250}
-              alt="Luz"
-            />
-            <h2>Umidade</h2>
-            <p>50%</p>
-          </div>
-          <div className={styles.plantStatsItem}>
-            <Image
-              src={luzIcon}
-              width={250}
-              height={250}
-              alt="Umidade"
-            />
-
-            <h2>Temperatura</h2>
-            <p>25ºC</p>
-          </div>
-          <div className={styles.plantStatsItem}>
-            <Image
-              src={abacaxi}
-              width={250}
-              height={250}
-              alt="Abacaxi"
-              style={{ borderRadius: '50%' }}
-            />
-          </div>
-        </div>
-        <div className={styles.plantInfo}>
-          <div className={styles.plantInfoItem}>
-            <div className={styles.plantInfoImage}>
-              <Image
-                src={abacaxi}
-                width={100}
-                height={100}
-                alt="Abacaxi"
-                style={{ borderRadius: '50%' }}
-              />
+              <div className={styles.plantInfoItem}>
+                <Image src={luzIcon} alt="Luz" />
+                <p>Luminosidade ideal: {actualPlant?.luminosity}</p>
+                <p>Luminosidade atual: {arduinoPlant?.luminosity}</p>
+              </div>
+              <div className={styles.plantInfoItem}>
+                <Image src={umidadeIcon} alt="Umidade" />
+                <p>Umidade ideal: {actualPlant?.humity}</p>
+                <p>Umidade atual: {arduinoPlant?.humity}</p>
+              </div>
             </div>
-            <div className={styles.plantInfoItemTitle}>
-              <h2>Abacaxi</h2>
-              <h3>Nome cientifico</h3>
-            </div>
-          </div>
-          <div className={styles.plantInfoContent}>
-            <p>
-              Luz: As bromélias ananas precisam de luz brilhante, mas evite a exposição direta ao sol intenso. Coloque a planta próxima a uma janela ensolarada ou em um local com iluminação indireta.
-              Temperatura: Essas plantas preferem temperaturas entre 20°C e 30°C. Evite expô-las a correntes de ar frio ou ambientes muito frios.
-              Água: Mantenha o solo levemente úmido, mas não encharcado. Regue a planta quando a camada superficial do solo estiver seca ao toque. No entanto, evite encher a parte central da planta (roseta) com água, pois isso pode levar ao apodrecimento.
-              Umidade: As bromélias ananas apreciam um ambiente um pouco úmido. Pulverize as folhas regularmente com água limpa para aumentar a umidade ao redor da planta.
-              Fertilização: Fertilize a planta a cada dois meses durante a primavera e o verão, usando um fertilizante balanceado solúvel em água. Siga as instruções do fabricante para a dosagem correta.
-              Transplante: Essas bromélias geralmente não precisam de transplante com frequência. No entanto, se a planta ficar muito grande para o vaso atual, você pode transplantá-la para um recipiente ligeiramente maior, usando uma mistura de solo bem drenado.
-              Pragas e doenças: As bromélias ananas são geralmente resistentes a pragas e doenças. No entanto, esteja atento a sinais de infestação por ácaros, cochonilhas ou pulgões. Se necessário, trate a planta com um inseticida adequado.
-
-            </p>
           </div>
         </div>
       </div>
+      <div className={styles.selectGroup}>
+        <select name="plant" id="plant" onChange={handlePlantSelect}>
+          <option value="0">Selecione uma planta</option>
+          {plantData.map((plant) => (
+            <option key={plant.id} value={plant.id}>
+              {plant.name}
+            </option>
+          ))}
+        </select>
+        <button onClick={choosePlant}>Monitorar planta</button>
+      </div>
+      <div className={styles.chartContainer}>
+        <canvas id="chart" ref={chartRef}></canvas>
+      </div>
+      {/* Restante do código... */}
     </div>
   );
-}
+};
+
+export default PlantPage;
