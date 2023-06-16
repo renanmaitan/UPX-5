@@ -189,7 +189,7 @@ const PlantPage = () => {
   };
 
   useEffect(() => {
-    if (plantContent && chart && plantContent.length > 0) {
+    if (plantContent && chart) {
       const chartData = {
         labels: plantContent.map((plant) => {
           const date = new Date(plant.time);
