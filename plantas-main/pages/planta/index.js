@@ -199,8 +199,6 @@ const PlantPage = () => {
   };
 
   const handlePlantSelect = (e) => {
-    const ctx = chartRef.current.getContext("2d");
-    Chart.getChart(ctx)?.destroy();
     const selectedPlantId = e.target.value;
     fetchPlantContent(selectedPlantId);
     setPlantContent([]);
