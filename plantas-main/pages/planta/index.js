@@ -1,20 +1,27 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./plantPage.module.css";
-import luzIcon from "../../public/assets/icon1.svg";
-import umidadeIcon from "../../public/assets/icon2.svg";
-import abacaxi from "../../public/assets/cabaxi.png";
-import Image from "next/image";
-import { Chart } from "chart.js/auto";
+import { Line } from "react-chartjs-2";
+import { Chart } from 'react-chartjs-2';
+import { Chart as ChartJS, LineController, LineElement, PointElement, LinearScale, Title } from 'chart.js';
+import { CategoryScale } from 'chart.js';
 
 const PlantPage = () => {
+
+  ChartJS.register(LineController, LineElement, PointElement, LinearScale, Title, CategoryScale)
+
   const [plantData, setPlantData] = useState([]);
   const [plantContent, setPlantContent] = useState([]);
   const [names, setNames] = useState([]);
   const [plantaClicada, setPlantaClicada] = useState();
   const [actualPlant, setActualPlant] = useState();
   const [arduinoPlant, setArduinoPlant] = useState();
-  const [chart, setChart] = useState(null);
-  const chartRef = useRef(null);
+
+  const addData = (label, humidityData, luminosityData) => {
+    setPlantContent((prevContent) => [
+      ...prevContent,
+      { label, humidityData, luminosityData },
+    ]);
+  };
 
   useEffect(() => {
     fetchPlantData();
@@ -105,86 +112,6 @@ const PlantPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (plantContent && chart && !chart.data.labels.length) {
-      chart.data.labels = plantContent.map((plant) => {
-        const date = new Date(plant.time);
-        return `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
-      });
-      chart.data.datasets[0].data = plantContent.map((plant) => plant.humity);
-      chart.data.datasets[1].data = plantContent.map((plant) => plant.luminosity);
-      chart.update();
-    }
-  }, [plantContent, chart]);
-
-  useEffect(() => {
-    const ctx = chartRef.current.getContext("2d");
-    const newChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: "Umidade",
-            data: [],
-            backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-            borderColor: ["rgba(255, 99, 132, 1)"],
-            borderWidth: 2,
-          },
-          {
-            label: "Luminosidade",
-            data: [],
-            backgroundColor: ["rgba(54, 162, 235, 0.2)"],
-            borderColor: ["rgba(54, 162, 235, 1)"],
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        animations: {
-          x: {
-            type: "number",
-            easing: "linear",
-            duration: 500,
-            from: NaN,
-            delay(ctx) {
-              if (ctx.type !== "data" || ctx.xStarted) {
-                return 0;
-              }
-              ctx.xStarted = true;
-              return ctx.index * 500;
-            },
-          },
-          y: {
-            type: "number",
-            easing: "linear",
-            duration: 500,
-            from: NaN,
-            delay(ctx) {
-              if (ctx.type !== "data" || ctx.yStarted) {
-                return 0;
-              }
-              ctx.yStarted = true;
-              return ctx.index * 500;
-            },
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    });
-    setChart(newChart);
-
-    return () => {
-      if (chart) {
-        chart.destroy();
-      }
-    };
-  }, []);
-
   const choosePlant = async () => {
     try {
       await fetch(`https://localhost:7298/plant/${plantaClicada}/actual`, {
@@ -206,6 +133,29 @@ const PlantPage = () => {
     return `data:image/png;base64,${imageBase64}`;
   };
 
+  const chartData = {
+    labels: plantContent.map((plant) => {
+      const date = new Date(plant.time);
+      return `${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+    }),
+    datasets: [
+      {
+        label: "Umidade",
+        data: plantContent.map((plant) => plant.humidity),
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 2,
+      },
+      {
+        label: "Luminosidade",
+        data: plantContent.map((plant) => plant.luminosity),
+        backgroundColor: "rgba(54, 162, 235, 0.2)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 2,
+      },
+    ],
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.hero}>
@@ -217,48 +167,48 @@ const PlantPage = () => {
               <div className={styles.plantInfoItem}>
                 {actualPlant?.imageBase64 && (
                   <img
-                    src={`data:image/png;base64,${actualPlant?.imageBase64}`}
-                    alt="Base64 Image"
+                    src={decodePhoto(actualPlant?.imageBase64)}
+                    alt="Imagem da planta"
                     style={{ width: "200px", height: "200px" }}
                   />
                 )}
-                <p>{actualPlant?.name}</p>
               </div>
-
               <div className={styles.plantInfoItem}>
-                <img src={umidadeIcon} alt="Umidade Icon" />
-                <p>Umidade: {arduinoPlant?.humity}%</p>
-              </div>
-
-              <div className={styles.plantInfoItem}>
-                <img src={luzIcon} alt="Luz Icon" />
-                <p>Luminosidade: {arduinoPlant?.luminosity}</p>
+                <h4>{actualPlant?.name}</h4>
+                <p>
+                  Umidade: <strong>{arduinoPlant?.humity}</strong>
+                </p>
+                <p>
+                  Luminosidade: <strong>{arduinoPlant?.luminosity}</strong>
+                </p>
               </div>
             </div>
           </div>
-
-          <div className={styles.plantSelect}>
+          <div className={styles.plantSelection}>
             <h3>Selecione uma planta</h3>
             <select onChange={handlePlantSelect}>
-              <option value="">-- Selecione --</option>
+              <option value="">Selecione uma planta</option>
               {plantData.map((plant) => (
                 <option key={plant.id} value={plant.id}>
                   {plant.name}
                 </option>
               ))}
             </select>
-            <button
-              onClick={choosePlant}
-              disabled={!plantaClicada || plantaClicada === actualPlant?.id}
-            >
-              Escolher planta
+            <button disabled={!plantaClicada} onClick={choosePlant}>
+              Selecionar
             </button>
           </div>
         </div>
       </div>
-
       <div className={styles.chartContainer}>
-        <canvas ref={chartRef}></canvas>
+        <Line
+          data={chartData}
+          options={{
+            responsive: true,
+          }}
+          updateMode="active"
+        />
+
       </div>
     </div>
   );

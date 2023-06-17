@@ -12,9 +12,9 @@ export default function Forms() {
 
   const [plantData, setPlantData] = useState({
     name: "",
-    soil: "",
-    light: "1",
-    hoursOfExposure: "",
+    soil: 0,
+    light: 0,
+    hoursOfExposure: 0,
     isUsingLight: false,
     imagePlant: null,
   });
@@ -54,7 +54,7 @@ export default function Forms() {
 
       const requestData = {
         name: plantData.name,
-        humidity: plantData.soil,
+        humity: plantData.soil,
         luminosity: plantData.light,
         hours: plantData.hoursOfExposure,
         isUsed: false,
@@ -137,8 +137,8 @@ export default function Forms() {
               value={plantData.light}
               onChange={handleInputChange}
             >
-              <option value="1500">Luz direta</option>
-              <option value="1000">Luz indireta</option>
+              <option value="100">Luz direta</option>
+              <option value="50">Luz indireta</option>
               <option value="0">Não usar luz</option>
             </select>
           </div>
