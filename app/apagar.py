@@ -1,7 +1,7 @@
 import requests
 import json
 
-for i in range(2840):
+while True:
     temp = requests.get('https://localhost:7298/arduino/last',verify=False)
     temp = json.loads(temp.text)
     id = temp['id']

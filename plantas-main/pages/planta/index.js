@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./plantPage.module.css";
 import luzIcon from "../../public/assets/icon1.svg";
 import umidadeIcon from "../../public/assets/icon2.svg";
 import abacaxi from "../../public/assets/cabaxi.png";
 import Image from "next/image";
-import { Chart } from "chart.js/auto";
+import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
 const PlantPage = () => {
   const [plantData, setPlantData] = useState([]);
@@ -13,8 +13,6 @@ const PlantPage = () => {
   const [plantaClicada, setPlantaClicada] = useState();
   const [actualPlant, setActualPlant] = useState();
   const [arduinoPlant, setArduinoPlant] = useState();
-  const [chart, setChart] = useState(null);
-  const chartRef = useRef(null);
 
   useEffect(() => {
     fetchPlantData();
@@ -36,17 +34,17 @@ const PlantPage = () => {
         },
       });
       const data = await response.json();
-      console.log("Success:", data);
+
       setPlantData(data);
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
-  const fetchArduinoPlantData = async (data) => {
+  const fetchArduinoPlantData = async (plantId) => {
     try {
       const responseContent = await fetch(
-        `https://localhost:7298/arduinodata/plant/${data.id}/last`,
+        `https://localhost:7298/arduinodata/plant/${plantId}/last`,
         {
           method: "GET",
           headers: {
@@ -76,7 +74,7 @@ const PlantPage = () => {
       const dataContent = await responseContent.json();
       console.log("Arduino planta:", dataContent);
       setActualPlant(dataContent);
-      fetchArduinoPlantData(dataContent);
+      fetchArduinoPlantData(dataContent.id);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -96,100 +94,14 @@ const PlantPage = () => {
       const dataContent = await responseContent.json();
       console.log("Success planta:", dataContent);
       setPlantContent(dataContent);
-      setNames((currentNames) => [
-        ...currentNames,
-        ...dataContent.map((plant) => plant.id),
-      ]);
+      setNames(dataContent.map((plant) => plant.id));
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
   useEffect(() => {
-    if (plantContent && chart && !chart.data.labels.length) {
-      chart.data.labels = plantContent.map((plant) => {
-        const date = new Date(plant.time);
-        return `${date.getHours()}:${date.getMinutes()}`;
-      });
-      chart.data.datasets[0].data = plantContent.map((plant) => plant.humity);
-      chart.data.datasets[1].data = plantContent.map((plant) => plant.luminosity);
-      chart.update();
-    }
-  }, [plantContent, chart]);
-
-
-  const createChart = (chartRef, data) => {
-    const ctx = chartRef.current.getContext("2d");
-
-    if (chart) {
-      chart.destroy();
-    }
-
-    const newChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: data.labels,
-        datasets: [
-          {
-            label: "Umidade",
-            data: data.humity,
-            backgroundColor: ["rgba(255, 99, 132, 0.2)"],
-            borderColor: ["rgba(255, 99, 132, 1)"],
-            borderWidth: 2,
-            pointRadius: 0,
-          },
-          {
-            label: "Luminosidade",
-            data: data.luminosity,
-            backgroundColor: ["rgba(54, 162, 235, 0.2)"],
-            borderColor: ["rgba(54, 162, 235, 1)"],
-            borderWidth: 2,
-            pointRadius: 0,
-          },
-        ],
-      },
-      options: {
-        animations: {
-          x: {
-            type: "number",
-            easing: "linear",
-            duration: 100,
-            from: NaN,
-            delay(ctx) {
-              if (ctx.type !== "data" || ctx.xStarted) {
-                return 0;
-              }
-              ctx.xStarted = true;
-              return ctx.index * 100;
-            },
-          },
-          y: {
-            type: "number",
-            easing: "linear",
-            duration: 100,
-            from: NaN,
-            delay(ctx) {
-              if (ctx.type !== "data" || ctx.yStarted) {
-                return 0;
-              }
-              ctx.yStarted = true;
-              return ctx.index * 100;
-            },
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    });
-
-    setChart(newChart);
-  };
-
-  useEffect(() => {
-    if (plantContent && chart) {
+    if (plantContent.length > 0) {
       const chartData = {
         labels: plantContent.map((plant) => {
           const date = new Date(plant.time);
@@ -198,10 +110,9 @@ const PlantPage = () => {
         humity: plantContent.map((plant) => plant.humity),
         luminosity: plantContent.map((plant) => plant.luminosity),
       };
-
-      createChart(chartRef, chartData);
+      console.log("chartData:", chartData);
     }
-  }, [plantContent, chart]);
+  }, [plantContent]);
 
   const choosePlant = async () => {
     try {
@@ -235,7 +146,7 @@ const PlantPage = () => {
               <div className={styles.plantInfoItem}>
                 {actualPlant?.imageBase64 && (
                   <img
-                    src={`data:image/png;base64,${actualPlant?.imageBase64}`}
+                    src={decodePhoto(actualPlant?.imageBase64)}
                     alt="Base64 Image"
                     style={{ width: "200px", height: "200px" }}
                   />
@@ -276,7 +187,33 @@ const PlantPage = () => {
       </div>
 
       <div className={styles.chartContainer}>
-        <canvas ref={chartRef}></canvas>
+        {plantContent.length > 0 && (
+          <LineChart width={600} height={400} data={plantContent}>
+            <XAxis dataKey="time" tickFormatter={(value) => {
+              const date = new Date(value);
+              return `${date.getHours()}:${date.getMinutes()}`;
+            }}/>
+            <YAxis />
+            
+            
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="humity"
+              name="Umidade"
+              stroke="#FF6384"
+              activeDot={{ r: 0 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="luminosity"
+              name="Luminosidade"
+              stroke="#36A2EB"
+              activeDot={{ r: 0 }}
+            />
+          </LineChart>
+        )}
       </div>
     </div>
   );
