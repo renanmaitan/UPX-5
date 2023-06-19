@@ -9,7 +9,23 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function Home() {
-  return (
+  return ( <>
+    <header>
+      <div className={styles.headerContainer}>
+        <div className={styles.logoContainer}>
+          <Link href="/">
+            <h1>BotanicCare</h1>
+          </Link>
+        </div>
+        <nav>
+          <ul>
+            <Link href="/">Home</Link>
+            <Link href="/planta">Plantas</Link>
+            <Link href="/forms">Cadastrar</Link>
+          </ul>
+        </nav>
+      </div>
+    </header>
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.text}>
@@ -18,14 +34,10 @@ export default function Home() {
         </div>
         <div className={styles.button}>
           <Link href="/forms">
-            <button>
-              Registrar planta
-            </button>
+            <button>Registrar planta</button>
           </Link>
           <Link href="/planta">
-            <button>
-              Iniciar sistema
-            </button>
+            <button>Iniciar sistema</button>
           </Link>
         </div>
       </div>
@@ -37,7 +49,6 @@ export default function Home() {
             width="100%"
             height="100%"
           />
-
         </div>
         <div className={styles.planta2}>
           <Image
@@ -46,7 +57,6 @@ export default function Home() {
             width="100%"
             height="100%"
           />
-
         </div>
         <div className={styles.planta3}>
           <Image
@@ -58,5 +68,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+  </>
   )
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Forms.module.css";
 import { ToastContainer, toast } from "react-toastify";
+import Link from "next/link";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Forms() {
@@ -99,7 +100,32 @@ export default function Forms() {
   };
 
   return (
-    <div>
+    <>
+    <header>
+        <div className={styles.headerContainer}>
+          <div className={styles.logoContainer}>
+
+              <Link href="/">
+              <h1>BotanicCare</h1>
+              </Link>
+          </div>
+          <nav>
+            <ul>
+              <Link href="/">
+                Home
+              </Link>
+              <Link href="/planta">
+                Plantas
+              </Link>
+              <Link href="/forms">
+                Cadastrar
+              </Link>
+            </ul>
+          </nav>
+        </div>
+
+      </header>
+    <div className={styles.container}>
       <div className={styles.hero}>
         <h1>Cadastro de plantas</h1>
         <p>
@@ -114,6 +140,7 @@ export default function Forms() {
           <div className={styles.formGroup}>
             <label htmlFor="name">Nome da planta</label>
             <input
+              className={styles.input}
               type="text"
               id="name"
               value={plantData.name}
@@ -125,6 +152,7 @@ export default function Forms() {
           <div className={styles.formGroup}>
             <label htmlFor="soil">Porcentagem da umidade do solo</label>
             <input
+              className={styles.input}
               type="number"
               id="soil"
               value={plantData.soil}
@@ -135,6 +163,7 @@ export default function Forms() {
           <div className={styles.formGroup}>
             <label htmlFor="light">Luz</label>
             <select
+              className={styles.select}
               id="light"
               value={plantData.light}
               onChange={handleInputChange}
@@ -150,6 +179,7 @@ export default function Forms() {
               Horas de exposição à luz solar
             </label>
             <input
+              className={styles.input}
               type="number"
               id="hoursOfExposure"
               value={plantData.hoursOfExposure}
@@ -158,8 +188,9 @@ export default function Forms() {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="imagePlant">Imagem da planta</label>
+            <label htmlFor="imagePlant" className={styles.imageLabel}>Adicionar imagem</label>
             <input
+              className={styles.fileInput}
               type="file"
               id="imagePlant"
               onChange={(event) =>
@@ -174,11 +205,12 @@ export default function Forms() {
 
           {/* enviar */}
           <div className={styles.formGroup}>
-            <button type="submit">Enviar</button>
+            <button className={styles.button} type="submit">Enviar</button>
           </div>
         </form>
       </div>
       <ToastContainer />
     </div>
+    </>
   );
 }

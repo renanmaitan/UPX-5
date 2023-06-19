@@ -1,148 +1,285 @@
+/* Header */
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #2c3e50;
+  padding: 20px 5%;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logoContainer h1 {
+  font-size: 24px;
+  margin-left: 10px;
+  color: #fff;
+}
+
+.headerContainer nav {
+  display: flex;
+  align-items: center;
+}
+
+.headerContainer nav ul {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.headerContainer nav ul a {
+  font-size: 14px;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Container */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+/* Hero Section */
 .hero {
-    height: 30vh;
-    background: #24EF7F;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0 5%;
+  text-align: center;
+  margin-bottom: 20px;
+  background: linear-gradient(to right, #16a085, #1abc9c);
+  padding: 50px 5%;
+  border-radius: 10px;
 }
 
 .hero h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #fff;
-    text-transform: uppercase;
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
-    margin-bottom: 20px;
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #fff;
 }
 
-.hero p {
-    font-size: 1.5rem;
-    font-weight: 400;
-    color: #fff;
-    text-align: center;
+.plantHeaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #D9D9D9;
-    padding: 50px 5%;
-    height: 100%;
+.plantSelection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
 }
 
-.form form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #2D9CDB;
-    padding: 50px 5%;
-    gap: 20px;
-    width: 560px;
-    max-width: 100%;
-    height: 100%;
-    border-radius: 10px;
+.plantSelection h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #fff;
 }
 
-.form form h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #fff;
-    text-transform: uppercase;
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.09);
-    margin-bottom: 20px;
+.plantSelection select {
+  padding: 8px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #1abc9c;
+  color: #fff;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
+.plantSelection button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #1abc9c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Chart Section */
+.chartContainer {
+  text-align: center;
+  background-color: #fff;
+  padding: 50px 5%;
+}
+
+.plantInfo {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.plantInfo h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.plantInfoContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.plantInfoItem {
+  margin-right: 20px;
+}
+
+.plantImage {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.plantStats p {
+  margin-bottom: 8px;
+}
+
+.chartContainer p {
+  margin-top: 20px;
+}
+
+/* Additional Styles */
 .formGroup {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: center;
+
+  margin: 20px 0;
 }
 
 .formGroup label {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 5px 0;
+  color: #06b25f;
 }
 
 .formGroup input[type="text"],
-.formGroup input[type="file"] {
-    width: 95%;
-    height: 40px;
-    border: none;
-    border-radius: 5px;
-    padding: 0 10px;
-    font-size: 1.0rem;
-    font-weight: 400;
-    color: #000;
-}
-
-.formGroup input[type="text"]:focus,
-.formGroup input[type="file"]:focus {
-    outline: none;
-    border: 1px solid #fff;
+.formGroup input[type="file"],
+.formGroup input[type="number"],
+.formGroup select {
+  width: 90%;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #000;
+  background-color: white;
 }
 
 .formGroup input[type="text"]::placeholder,
-.formGroup input[type="file"]::placeholder {
-    font-size: 1.0rem;
-    font-weight: 400;
-    color: #000;
+.formGroup input[type="file"]::placeholder,
+.formGroup input[type="number"]::placeholder {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #666;
 }
 
-.formGroup input[type="number"] {
-    width: 95%;
-    height: 40px;
-    border: none;
-    border-radius: 5px;
-    padding: 0 10px;
-    font-size: 1.0rem;
-    font-weight: 400;
-    color: #000;
-
-}
-
-.formGroup select {
-    width: 99%;
-    height: 40px;
-    border: none;
-    border-radius: 5px;
-    padding: 0 10px;
-    font-size: 1.0rem;
-    font-weight: 400;
-    color: #000;
-}
-
+.formGroup input[type="text"]:focus,
+.formGroup input[type="file"]:focus,
+.formGroup input[type="number"]:focus,
 .formGroup select:focus {
-    outline: none;
-    border: 1px solid #fff;
+  outline: none;
+  border: 1px solid #06b25f;
 }
 
 .formGroup select option {
-    font-size: 1.0rem;
-    font-weight: 400;
-    height: 50px;
-    color: #000;
-
+  font-size: 1rem;
+  font-weight: 400;
+  height: 40px;
+  color: #000;
 }
 
 .formGroup button[type="submit"] {
-    padding: 10px 10%;
-    border: none;
-    border-radius: 5px;
-    background-color: #219653;
-    color: white;
-    align-self: flex-end;
+  padding: 10px 15%;
+  border: none;
+  border-radius: 5px;
+  background-color: #06b25f;
+  color: #fff;
+  align-self: flex-end;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
 .formGroup button[type="submit"]:hover {
-    cursor: pointer;
-    background-color: #1E7E34;
+  background-color: #049d50;
+  transition: background-color 0.3s ease;
+}
+
+.formGroup input[type="file"] {
+  display: none;
+}
+
+.formGroup .custom-file-input {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #000;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.formGroup .custom-file-input::before {
+  content: "Choose File";
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  line-height: 40px;
+  text-align: center;
+  background-color: #06b25f;
+  color: #fff;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.formGroup .custom-file-input:hover::before {
+  background-color: #049d50;
+}
+
+.formGroup .custom-file-input:active::before {
+  background-color: #038841;
+}
+
+.formGroup .custom-file-input:focus {
+  outline: none;
+}
+
+.formGroup .custom-file-input:focus::before {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.formGroup .custom-file-input.has-file::before {
+  content: attr(data-file-name);
+}
+
+.imageLabel {
+  border: 1px solid #06b25f;
+  color: #06b25f;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.imageLabel:hover {
+  border: 1px solid #049d50;
+  color: #049d50;
+  transition: background-color 0.3s ease;
 }
