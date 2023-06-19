@@ -165,3 +165,10 @@
   font-size: 22px;
 
 }
+
+.plantInfoItem hr {
+  height: 3px;
+  color: black;
+  background-color: black;
+  margin-top: 20px;
+}

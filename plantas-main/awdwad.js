@@ -37,8 +37,17 @@ export default function PlantPage() {
       setPlantSelected(null);
       return;
     }
+    console.log('plantSelected', actualPlantLastData);
     setPlantSelected(e.target.value);
   };
+
+  useEffect(() => {
+    const id = plantSelected
+    getLastData(id).then((data) => {
+      setActualPlantLastData(data);
+    })
+  }, [plantSelected])
+
 
   useEffect(() => {
     if (plantSelected) {
@@ -48,13 +57,6 @@ export default function PlantPage() {
       setSelectedPlantData(selectedPlant);
     }
   }, [plantSelected, formsData]);
-
-  useEffect(() => {
-    const id = plantSelected
-    getLastData(id).then((data) => {
-      setActualPlantLastData(data);
-    })
-  }, [plantSelected])
 
   const decodePhoto = (imageBase64) => {
     return `data:image/png;base64,${imageBase64}`;
@@ -121,18 +123,17 @@ export default function PlantPage() {
                 <div className={styles.plantInfoContent}>
                   <div className={styles.plantInfoItem}>
                     {/* Humidity and luminosity data */}
-                    {actualPlantLastData?.humity !== "" && plantSelected ? (
-                      <p>Humidade atual: <strong className={styles.humity}>{actualPlantLastData?.humity}</strong></p>
-                    ) : null}
-                    {actualPlantLastData?.luminosity !== "" && plantSelected ? (
-                      <p>Luminosidade atual: <strong className={styles.luminosity}>{actualPlantLastData?.luminosity}</strong></p>
-                    ) : null}
-                    <strong><hr></hr><br></br></strong>
                     {selectedPlantData?.humity !== "" && plantSelected ? (
-                      <p>Humidade ideal: <strong className={styles.humity}>{selectedPlantData?.humity}</strong></p>
+                      <p>Humidade ideal: {selectedPlantData?.humity}</p>
                     ) : null}
                     {selectedPlantData?.luminosity !== "" && plantSelected ? (
-                      <p>Luminosidade ideal: <strong className={styles.luminosity}>{selectedPlantData?.luminosity}</strong></p>
+                      <p>Luminosidade ideal: {selectedPlantData?.luminosity}</p>
+                    ) : null}
+                    {actualPlantLastData?.humity !== "" && plantSelected ? (
+                      <p>Humidade atual: {actualPlantLastData?.humity}</p>
+                    ) : null}
+                    {actualPlantLastData?.luminosity !== "" && plantSelected ? (
+                      <p>Luminosidade atual: {actualPlantLastData?.luminosity}</p>
                     ) : null}
                   </div>
                   <div className={styles.plantInfoItem}>
